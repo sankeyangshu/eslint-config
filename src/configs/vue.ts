@@ -1,5 +1,5 @@
-import type { FlatConfigItemType, OptionsHasTypeScript, RequiredVueOptionsType } from '../types';
 import { ensurePackages, interopDefault } from '../utils';
+import type { FlatConfigItemType, OptionsHasTypeScript, RequiredVueOptionsType } from '../types';
 import { createTypescriptRules } from './typescript';
 
 /**

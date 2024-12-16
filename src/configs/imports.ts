@@ -1,5 +1,5 @@
-import type { FlatConfigItemType } from '../types';
 import { interopDefault } from '../utils';
+import type { FlatConfigItemType } from '../types';
 
 /**
  * Create a basic configuration for imports.
@@ -25,13 +25,7 @@ export async function createImportsConfig(
         'import/no-named-default': 'error',
         'import/no-self-import': 'error',
         'import/no-webpack-loader-syntax': 'error',
-        'import/order': [
-          'error',
-          {
-            groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
-            pathGroups: [{ group: 'internal', pattern: '{{@,~}/,#}**' }],
-          },
-        ],
+        'import/order': 'off',
 
         ...overrides,
       },

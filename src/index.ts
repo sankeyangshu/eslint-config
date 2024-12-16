@@ -1,23 +1,29 @@
 import {
   createAstroConfig,
+  createCommandConfig,
   createFormatterConfig,
   createIgnoresConfig,
   createImportsConfig,
   createJavascriptConfig,
+  createJsdocConfig,
+  createJsoncConfig,
   createNodeConfig,
+  createPerfectionistConfig,
   createPrettierConfig,
   createReactConfig,
   createReactNativeConfig,
   createSolidConfig,
+  createSortPackageJsonConfig,
+  createSortTsConfig,
   createSvelteConfig,
   createTypescriptConfig,
   createUnicornConfig,
   createUnoCssConfig,
   createVueConfig,
 } from './configs';
-import type { Awaitable, FlatConfigItemType, OptionsType } from './types';
 import { getOverridesRules } from './utils';
 import { createOptions } from './utils/options';
+import type { Awaitable, FlatConfigItemType, OptionsType } from './types';
 
 /**
  * Create a configuration for ESLint.
@@ -42,9 +48,15 @@ export async function defineConfig(
 
   const js = createJavascriptConfig(overrideRecord.js);
   const node = await createNodeConfig(overrideRecord.n);
+  const jsdoc = await createJsdocConfig(overrideRecord.jsdoc);
   const imp = await createImportsConfig(overrideRecord.import);
+  const perfectionist = await createPerfectionistConfig(overrideRecord.perfectionist);
+  const command = await createCommandConfig();
   const unicorn = await createUnicornConfig(overrideRecord.unicorn);
   const ts = await createTypescriptConfig(overrideRecord.ts);
+  const jsonc = await createJsoncConfig(overrideRecord.jsonc);
+  const sortPackage = createSortPackageJsonConfig();
+  const sortTs = createSortTsConfig();
   const vue = await createVueConfig(opts.vue, overrideRecord.vue);
   const solid = await createSolidConfig(opts.solid, overrideRecord.solid);
   const react = await createReactConfig(opts.react, overrideRecord.react);
@@ -65,9 +77,15 @@ export async function defineConfig(
     ignore,
     ...js,
     ...node,
+    ...jsdoc,
     ...imp,
+    ...perfectionist,
+    ...command,
     ...unicorn,
     ...ts,
+    ...jsonc,
+    ...sortPackage,
+    ...sortTs,
     ...vue,
     ...react,
     ...reactNative,

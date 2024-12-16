@@ -1,9 +1,9 @@
+import { ensurePackages, interopDefault } from '../utils';
 import type {
   FlatConfigItemType,
   PartialPrettierExtendedOptionsType,
   RequiredRuleBaseOptionsType,
 } from '../types';
-import { ensurePackages, interopDefault } from '../utils';
 import { createTypescriptRules } from './typescript';
 
 /**

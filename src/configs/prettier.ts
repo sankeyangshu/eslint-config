@@ -1,7 +1,7 @@
 import prettierRules from 'eslint-config-prettier';
 import { GLOB_PRETTIER_LINT } from '../constants';
-import type { FlatConfigItemType, PartialPrettierExtendedOptionsType } from '../types';
 import { interopDefault } from '../utils';
+import type { FlatConfigItemType, PartialPrettierExtendedOptionsType } from '../types';
 
 const { rules: eslintRules } = prettierRules;
 
@@ -16,11 +16,12 @@ export async function createPrettierConfig(
 ): Promise<FlatConfigItemType[]> {
   const pluginPrettier = await interopDefault(import('eslint-plugin-prettier'));
 
-  const { plugins = [] } = rules;
+  // TODO: Add plugins, but since there are currently no plugins, comment
+  // const { plugins = [] } = rules;
 
   const pRules: PartialPrettierExtendedOptionsType = {
     ...rules,
-    plugins: plugins.concat('prettier-plugin-jsdoc'),
+    // plugins: plugins.concat('prettier-plugin-jsdoc'),
   };
 
   return [

@@ -1,5 +1,5 @@
-import type { BaseOptionsType, FlatConfigItemType } from '../types';
 import { interopDefault } from '../utils';
+import type { BaseOptionsType, FlatConfigItemType } from '../types';
 
 /**
  * Create a configuration for ignores.

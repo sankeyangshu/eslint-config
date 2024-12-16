@@ -1,6 +1,6 @@
 import { GLOB_SRC } from '../constants';
-import type { FlatConfigItemType } from '../types';
 import { interopDefault } from '../utils';
+import type { FlatConfigItemType } from '../types';
 
 /**
  * Create a basic configuration for TypeScript.

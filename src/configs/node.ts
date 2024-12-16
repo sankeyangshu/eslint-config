@@ -1,5 +1,5 @@
-import type { FlatConfigItemType } from '../types';
 import { interopDefault } from '../utils';
+import type { FlatConfigItemType } from '../types';
 
 /**
  * Create a basic configuration for Node.

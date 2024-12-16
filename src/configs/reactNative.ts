@@ -1,5 +1,5 @@
-import type { FlatConfigItemType, RequiredRuleBaseOptionsType } from '../types';
 import { ensurePackages, interopDefault } from '../utils';
+import type { FlatConfigItemType, RequiredRuleBaseOptionsType } from '../types';
 
 /**
  * Create a basic configuration for React Native.

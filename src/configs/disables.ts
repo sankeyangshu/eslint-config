@@ -9,12 +9,11 @@ import type { FlatConfigItemType } from '../types';
  *   configuration for ESLint.
  * @returns A list of flat config items.
  */
-export async function createDisables(): Promise<FlatConfigItemType[]> {
+export async function createDisablesConfig(): Promise<FlatConfigItemType[]> {
   return [
     {
       files: [`**/scripts/${GLOB_SRC}`],
       rules: {
-        'antfu/no-top-level-await': 'off',
         'no-console': 'off',
         'ts/explicit-function-return-type': 'off',
       },
@@ -22,15 +21,7 @@ export async function createDisables(): Promise<FlatConfigItemType[]> {
     {
       files: [`**/cli/${GLOB_SRC}`, `**/cli.${GLOB_SRC_EXT}`],
       rules: {
-        'antfu/no-top-level-await': 'off',
         'no-console': 'off',
-      },
-    },
-    {
-      files: ['**/bin/**/*', `**/bin.${GLOB_SRC_EXT}`],
-      rules: {
-        'antfu/no-import-dist': 'off',
-        'antfu/no-import-node-modules-by-path': 'off',
       },
     },
     {
@@ -51,7 +42,6 @@ export async function createDisables(): Promise<FlatConfigItemType[]> {
     {
       files: [`**/*.config.${GLOB_SRC_EXT}`, `**/*.config.*.${GLOB_SRC_EXT}`],
       rules: {
-        'antfu/no-top-level-await': 'off',
         'no-console': 'off',
         'ts/explicit-function-return-type': 'off',
       },

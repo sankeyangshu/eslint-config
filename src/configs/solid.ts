@@ -1,10 +1,10 @@
 import { GLOB_JSX, GLOB_TSX } from '../constants';
+import { ensurePackages, interopDefault } from '../utils';
 import type {
   FlatConfigItemType,
   OptionsHasTypeScript,
   RequiredRuleBaseOptionsType,
 } from '../types';
-import { ensurePackages, interopDefault } from '../utils';
 
 /**
  * Creates a basic configuration for Solid.

@@ -1,9 +1,6 @@
 import {
   GLOB_CSS,
   GLOB_HTML,
-  GLOB_JSON,
-  GLOB_JSON5,
-  GLOB_JSONC,
   GLOB_LESS,
   GLOB_MARKDOWN,
   GLOB_POSTCSS,
@@ -11,13 +8,13 @@ import {
   GLOB_TOML,
   GLOB_YAML,
 } from '../constants';
+import { ensurePackages, interopDefault } from '../utils';
 import type {
   FlatConfigItemType,
   OptionsType,
   PartialPrettierExtendedOptionsType,
   PrettierParser,
 } from '../types';
-import { ensurePackages, interopDefault } from '../utils';
 
 /**
  * Create a configuration for Prettier.
@@ -32,7 +29,7 @@ export async function createFormatterConfig(
   options?: OptionsType['formatter'],
   prettierRules: PartialPrettierExtendedOptionsType = {}
 ): Promise<FlatConfigItemType[]> {
-  const { html = true, css = true, json = true, markdown, yaml, toml } = options || {};
+  const { html = true, css = true, markdown, yaml, toml } = options || {};
 
   const [pluginPrettier, parserPlain] = await Promise.all([
     interopDefault(import('eslint-plugin-prettier')),
@@ -78,14 +75,6 @@ export async function createFormatterConfig(
   if (html) {
     const htmlConfig = createPrettierFormatter([GLOB_HTML], 'html');
     configs.push(htmlConfig);
-  }
-
-  if (json) {
-    const jsonConfig = createPrettierFormatter([GLOB_JSON, GLOB_JSONC], 'json', [
-      'prettier-plugin-json-sort',
-    ]);
-    const json5Config = createPrettierFormatter([GLOB_JSON5], 'json5');
-    configs.push(jsonConfig, json5Config);
   }
 
   if (markdown) {

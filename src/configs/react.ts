@@ -1,6 +1,6 @@
 import { isPackageExists } from 'local-pkg';
-import type { FlatConfigItemType, RequiredRuleBaseOptionsType } from '../types';
 import { ensurePackages, interopDefault } from '../utils';
+import type { FlatConfigItemType, RequiredRuleBaseOptionsType } from '../types';
 
 /**
  * Creates a basic configuration for React using ESLint plugins. Ensures the necessary packages are
