@@ -79,6 +79,9 @@ export async function loadPrettierConfig(cwd: string) {
 type OverrideRuleKey =
   | 'ts'
   | 'import'
+  | 'perfectionist'
+  | 'jsdoc'
+  | 'jsonc'
   | 'n'
   | 'unicorn'
   | 'vue'
@@ -103,6 +106,9 @@ export function getOverridesRules(overrides: Record<string, string> = {}) {
   const rulePrefixes: Record<OverrideRuleKey, string> = {
     ts: '@typescript-eslint/',
     import: 'import/',
+    perfectionist: 'perfectionist/',
+    jsdoc: 'jsdoc/',
+    jsonc: 'jsonc/',
     n: 'n/',
     unicorn: 'unicorn/',
     vue: 'vue/',

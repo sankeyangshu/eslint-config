@@ -13,7 +13,6 @@ export default defineConfig({
   formatter: {
     html: true,
     css: true,
-    json: true,
     markdown: true,
     yaml: true,
     toml: true,

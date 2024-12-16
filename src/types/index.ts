@@ -1,7 +1,6 @@
+import type { FlatConfigItemType } from './rules';
 import type { FlatGitignoreOptions } from 'eslint-config-flat-gitignore';
 import type { BuiltInParserName, LiteralUnion, RequiredOptions } from 'prettier';
-import type { JsdocOptions } from 'prettier-plugin-jsdoc';
-import type { FlatConfigItemType } from './rules';
 
 /** A type that can be awaited (可以被等待的类型) */
 export type Awaitable<T> = T | Promise<T>;
@@ -58,13 +57,11 @@ export interface BaseOptionsType {
    * {
    *  "html": true,
    *  "css": true,
-   *  "json": true,
    * }
    */
   formatter: {
     html?: boolean;
     css?: boolean;
-    json?: boolean;
     markdown?: boolean;
     yaml?: boolean;
     toml?: boolean;
@@ -104,7 +101,7 @@ export interface OptionsHasTypeScript {
 export type RequiredVueOptionsType = Required<VueOptionsType>;
 
 /** Prettier custom parser (自定义 prettier 解析器类型) */
-export type PrettierCustomParser = 'astro' | 'svelte' | 'jsdoc-parser' | 'toml';
+export type PrettierCustomParser = 'astro' | 'svelte' | 'toml';
 
 export type PrettierParser = BuiltInParserName | PrettierCustomParser;
 
@@ -114,11 +111,10 @@ export interface PrettierOptionsType extends RequiredOptions {
 }
 
 /** Prettier options (Prettier 配置选项类型) */
-export type PrettierExtendedOptionsType = PrettierOptionsType & Partial<JsdocOptions>;
+export type PrettierExtendedOptionsType = PrettierOptionsType;
 
 /** Partial prettier options (部分 Prettier 配置选项类型) */
-export type PartialPrettierExtendedOptionsType = Partial<PrettierOptionsType> &
-  Partial<JsdocOptions>;
+export type PartialPrettierExtendedOptionsType = Partial<PrettierOptionsType>;
 
 export interface OptionsUnicornType {
   /**

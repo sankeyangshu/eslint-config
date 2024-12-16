@@ -36,7 +36,6 @@ export async function createOptions(options: Partial<OptionsType> = {}) {
     formatter: {
       html: true,
       css: true,
-      json: true,
     },
   };
 
