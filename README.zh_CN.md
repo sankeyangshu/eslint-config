@@ -1,37 +1,39 @@
 # @sankeyangshu/eslint-config
 
-English | [中文](./README.zh_CN.md)
+[English](./README.md) | 中文
 
-Sankeyangshu's ESLint flat configuration preset, includes Prettier.
+Sankeyangshu 的 ESLint 扁平化配置预设，包含 prettier。
 
-## Features
+## 功能
 
-- Format code with Prettier
-- Default configuration supports JavaScript and TypeScript
-- Supports JSON(5), YAML, Markdown, and other formats
-- Opinionated, but highly customizable
-- Optional support for Vue, React, ReactNative, Solid, Svelte, and Astro
-- Optional formatter support for CSS, HTML, YAML, Markdown, etc.
-- Automatically sorts imports, `package.json`, `tsconfig.json`, and more
-- Supports [ESLint Flat configuration](https://eslint.org/docs/latest/use/configure/configuration-files-new), easy to compose!
-- Ignores common folders like `dist`, `node_modules`, and `coverage`
-- By default respects `.gitignore`
-- Reasonably strict, but improves code quality
-- Requires ESLint v9.5.0+
+- 使用 Prettier 格式化代码
+- 默认配置支持 JavaScript 和 TypeScript
+- 支持 JSON(5)、YAML、Markdown 等格式
+- 有主见，但非常可定制
+- 可选 Vue、React、ReactNative、Solid、Svelte 和 Astro 支持
+- 可选格式化程序支持格式化 CSS、HTML、YAML、Markdown 等。
+- 自动排序导入、`package.json`、`tsconfig.json` 等文件。
+- 支持 [ESLint Flat 配置](https://eslint.org/docs/latest/use/configure/configuration-files-new)，易于组合！
+- 忽略常见文件夹，如 `dist`、`node_modules`、`coverage` 中的文件
+- 默认情况下尊重 .gitignore
+- 合理严格，但提升代码质量
+- 需要 ESLint v9.5.0+
 
-## Install
+## 安装
 
 ```bash
 pnpm i -D eslint @sankeyangshu/eslint-config
 ```
 
-## Usage
+## 用法
 
-### ESLint config file
+### ESLint 配置文件
 
-- Add [`"type": "module"`](https://nodejs.org/api/packages.html#type) to your `package.json`
-- Create an `eslint.config.js` file
-- Import the configuration `@sankeyangshu/eslint-config`
+- 在 `package.json` 中添加 [`"type": "module"`](https://nodejs.org/api/packages.html#type)
+
+- 创建配置文件 `eslint.config.js`
+
+- 导入配置 `@sankeyangshu/eslint-config`
 
 ```js
 import { defineConfig } from '@sankeyangshu/eslint-config';
@@ -42,9 +44,9 @@ export default defineConfig({
 ```
 
 > [!NOTE]
-> Check out [Options](#options) for more details.
+> 查看 [配置](#配置) 获取更多细节。
 
-### ESLint Settings in VSCode
+### VSCode 中的 ESLint 设置
 
 ```json
 {
@@ -55,11 +57,11 @@ export default defineConfig({
   "eslint.useFlatConfig": true,
   "editor.formatOnSave": false,
   "eslint.validate": [
-    // "javascript", // Default support
-    // "javascriptreact", // Default support
-    // "typescript",  // Default support
-    // "typescriptreact", // Default support
-    // Add any languages you want to lint and format
+    // "javascript", // 默认支持
+    // "javascriptreact", // 默认支持
+    // "typescript",  // 默认支持
+    // "typescriptreact", // 默认支持
+    // 添加你想要检查和格式化的语言
     "vue",
     "svelte",
     "astro",
@@ -67,7 +69,7 @@ export default defineConfig({
     "css",
     "json",
     "jsonc",
-    "yaml",
+    "yaml"
     "toml",
     "markdown"
   ],
@@ -75,7 +77,7 @@ export default defineConfig({
 }
 ```
 
-### Scripts in package.json
+### 在package.json 中添加命令
 
 ```json
 {
@@ -86,33 +88,33 @@ export default defineConfig({
 }
 ```
 
-## Options
+## 配置
 
 ````typescript
 interface Options {
   /**
-   * Project root directory
+   * 项目根目录
    *
    * @default process.cwd()
    */
   cwd: string;
   /**
-   * Glob patterns to ignore
+   * 被忽略的 glob
    */
   ignores: string[];
   /**
-   * Enable gitignore support
+   * 启用 gitignore 支持
    *
    * @default true
    * @see https://github.com/antfu/eslint-config-flat-gitignore
    */
   gitignore?: boolean | FlatGitignoreOptions;
   /**
-   * Override rules
+   * 覆盖的规则
    */
   overrides?: FlatConfigItem['rules'];
   /**
-   * Default Prettier configuration
+   * 默认的Prettier配置
    *
    * @default
    * ```json
@@ -129,17 +131,17 @@ interface Options {
    */
   prettierRules: PartialPrettierExtendedOptions;
   /**
-   * Whether to use prettierrc for Prettier configuration
+   * 是否使用 prettierrc 进行 prettier 配置
    *
-   * If true, rules in prettierrc will override the default rules
+   * 如果为 true，prettierrc 中的规则将会覆盖默认规则
    *
    * @default true
    */
   usePrettierrc: boolean;
 
   /**
-   * Formatters
-   * @default Default supported formatters
+   * 格式化器
+   * @default 默认支持的格式化器
    * {
    *  "html": true,
    *  "css": true,
@@ -162,14 +164,14 @@ interface Options {
 
 type RuleBaseOptions<T = NonNullable<unknown>> = T & {
   /**
-   * Files to lint
+   * 需要被检测的文件
    */
   files?: string[];
 };
 
 type VueOptions = RuleBaseOptions<{
   /**
-   * Vue version
+   * Vue 版本
    *
    * @default 3
    */
@@ -177,7 +179,7 @@ type VueOptions = RuleBaseOptions<{
 }>;
 ````
 
-## Thanks
+## 感谢
 
 - [Antfu's eslint-config](https://github.com/antfu/eslint-config)
 - [Sxzz's eslint-config](https://github.com/sxzz/eslint-config)
