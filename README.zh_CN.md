@@ -1,6 +1,6 @@
 # @sankeyangshu/eslint-config
 
-[English](./README.md) | 中文
+[English](./README.md) | 简体中文
 
 Sankeyangshu 的 ESLint 扁平化配置预设，包含 prettier。
 
