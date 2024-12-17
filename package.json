@@ -1,6 +1,6 @@
 {
   "name": "@sankeyangshu/eslint-config",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "type": "module",
   "packageManager": "pnpm@9.14.2",
   "description": "ESLint config for @sankeyangshu.",
@@ -21,6 +21,7 @@
   "keywords": [
     "eslint",
     "eslint-config",
+    "eslint-flat-config",
     "eslint-config-vue",
     "eslint-config-react",
     "eslint-config-react-native",
@@ -52,11 +53,11 @@
     "build:inspector": "eslint-config-inspector build --config eslint-inspector.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "simple-git-hooks",
     "release": "bumpp && pnpm publish",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "watch": "tsup --format esm,cjs --watch"
+    "watch": "tsup --format esm,cjs --watch",
+    "prepare": "simple-git-hooks"
   },
   "peerDependencies": {
     "@unocss/eslint-plugin": ">=0.64.1",
