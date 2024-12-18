@@ -1,7 +1,10 @@
+import { FlatConfigComposer } from 'eslint-flat-config-utils';
 import {
   createAstroConfig,
   createCommandConfig,
+  createDisablesConfig,
   createFormatterConfig,
+  createGitIgnoresConfig,
   createIgnoresConfig,
   createImportsConfig,
   createJavascriptConfig,
@@ -36,67 +39,87 @@ export async function defineConfig(
   options: Partial<OptionsType> = {},
   ...userConfigs: Awaitable<FlatConfigItemType>[]
 ) {
+  const {
+    gitignore: enableGitignore = true,
+    usePrettierrc: enablePrettier = true,
+    astro: enableAstro = false,
+    react: enableReact = false,
+    'react-native': enableReactNative = false,
+    solid: enableSolid = false,
+    svelte: enableSvelte = false,
+    unocss: enableUnoCSS = false,
+    vue: enableVue = false,
+  } = options;
+
   const opts = await createOptions(options);
-
-  const ignore: FlatConfigItemType = {
-    ignores: opts.ignores,
-  };
-
   const overrideRecord = getOverridesRules(opts.overrides);
 
-  const gitignore = await createIgnoresConfig(opts.gitignore);
+  const configs: Awaitable<FlatConfigItemType[]>[] = [];
 
-  const js = createJavascriptConfig(overrideRecord.js);
-  const node = await createNodeConfig(overrideRecord.n);
-  const jsdoc = await createJsdocConfig(overrideRecord.jsdoc);
-  const imp = await createImportsConfig(overrideRecord.import);
-  const perfectionist = await createPerfectionistConfig(overrideRecord.perfectionist);
-  const command = await createCommandConfig();
-  const unicorn = await createUnicornConfig(overrideRecord.unicorn);
-  const ts = await createTypescriptConfig(overrideRecord.ts);
-  const jsonc = await createJsoncConfig(overrideRecord.jsonc);
-  const sortPackage = createSortPackageJsonConfig();
-  const sortTs = createSortTsConfig();
-  const vue = await createVueConfig(opts.vue, overrideRecord.vue);
-  const solid = await createSolidConfig(opts.solid, overrideRecord.solid);
-  const react = await createReactConfig(opts.react, overrideRecord.react);
-  const reactNative = await createReactNativeConfig(
-    opts['react-native'],
-    overrideRecord['react-native']
+  if (enableGitignore) {
+    configs.push(createGitIgnoresConfig(opts.gitignore));
+  }
+
+  // Base configs
+  configs.push(
+    createIgnoresConfig(opts.ignores),
+    createJavascriptConfig(overrideRecord.js),
+    createNodeConfig(overrideRecord.n),
+    createJsdocConfig(overrideRecord.jsdoc),
+    createImportsConfig(overrideRecord.import),
+    createCommandConfig(),
+    createPerfectionistConfig(overrideRecord.perfectionist),
+    createUnicornConfig(overrideRecord.unicorn),
+    createTypescriptConfig(overrideRecord.ts)
   );
-  const svelte = await createSvelteConfig(opts.svelte, opts.prettierRules, overrideRecord.svelte);
-  const astro = await createAstroConfig(opts.astro, opts.prettierRules, overrideRecord.astro);
-  const unocss = await createUnoCssConfig(opts.unocss, overrideRecord.unocss);
-  const prettier = await createPrettierConfig(opts.prettierRules);
-  const formatter = await createFormatterConfig(opts.formatter, opts.prettierRules);
 
-  const userResolved = await Promise.all(userConfigs);
+  if (enableVue) {
+    configs.push(createVueConfig(opts.vue, overrideRecord.vue));
+  }
 
-  return [
-    ...gitignore,
-    ignore,
-    ...js,
-    ...node,
-    ...jsdoc,
-    ...imp,
-    ...perfectionist,
-    ...command,
-    ...unicorn,
-    ...ts,
-    ...jsonc,
-    ...sortPackage,
-    ...sortTs,
-    ...vue,
-    ...react,
-    ...reactNative,
-    ...solid,
-    ...astro,
-    ...svelte,
-    ...unocss,
-    ...userResolved,
-    ...prettier,
-    ...formatter,
-  ];
+  if (enableReact) {
+    configs.push(createReactConfig(opts.react, overrideRecord.react));
+  }
+
+  if (enableReactNative) {
+    configs.push(createReactNativeConfig(opts['react-native'], overrideRecord['react-native']));
+  }
+
+  if (enableSolid) {
+    configs.push(createSolidConfig(opts.solid, overrideRecord.solid));
+  }
+
+  if (enableSvelte) {
+    configs.push(createSvelteConfig(opts.svelte, opts.prettierRules, overrideRecord.svelte));
+  }
+
+  if (enableUnoCSS) {
+    configs.push(createUnoCssConfig(opts.unocss, overrideRecord.unocss));
+  }
+
+  if (enableAstro) {
+    configs.push(createAstroConfig(opts.astro, opts.prettierRules, overrideRecord.astro));
+  }
+
+  configs.push(
+    createJsoncConfig(overrideRecord.jsonc),
+    createSortPackageJsonConfig(),
+    createSortTsConfig()
+  );
+
+  configs.push(createDisablesConfig());
+
+  if (enablePrettier) {
+    configs.push(createPrettierConfig(opts.prettierRules));
+  }
+
+  configs.push(createFormatterConfig(opts.formatter, opts.prettierRules));
+
+  let composer = new FlatConfigComposer<FlatConfigItemType, any>();
+
+  composer = composer.append(...configs, ...(userConfigs as any));
+
+  return composer;
 }
 
 export * from './types';

@@ -7,7 +7,7 @@ import type { BaseOptionsType, FlatConfigItemType } from '../types';
  * @param options Optional options for the config, either a boolean or an options object.
  * @returns A list of flat config items.
  */
-export async function createIgnoresConfig(options?: BaseOptionsType['gitignore']) {
+export async function createGitIgnoresConfig(options?: BaseOptionsType['gitignore']) {
   if (!options) return [];
 
   const configs: FlatConfigItemType[] = [];
@@ -19,4 +19,20 @@ export async function createIgnoresConfig(options?: BaseOptionsType['gitignore']
   configs.push(...configItem);
 
   return configs;
+}
+
+/**
+ * Create a configuration for ignores.
+ *
+ * @param userIgnores Optional glob patterns to ignore, defaults to an empty list.
+ * @returns A list of flat config items.
+ */
+export async function createIgnoresConfig(
+  userIgnores: string[] = []
+): Promise<FlatConfigItemType[]> {
+  return [
+    {
+      ignores: [...userIgnores],
+    },
+  ];
 }

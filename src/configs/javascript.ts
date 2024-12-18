@@ -9,9 +9,9 @@ import type { FlatConfigItemType } from '../types';
  * @param overrides Optional overrides for the config.
  * @returns A list of flat config items.
  */
-export function createJavascriptConfig(
+export async function createJavascriptConfig(
   overrides: Record<string, string> = {}
-): FlatConfigItemType[] {
+): Promise<FlatConfigItemType[]> {
   return [
     {
       languageOptions: {
