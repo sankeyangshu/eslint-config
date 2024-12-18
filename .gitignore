@@ -23,3 +23,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+_fixtures
+
+.temp
+.history
+
+.eslint-config-inspector

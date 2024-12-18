@@ -5,11 +5,12 @@ const { defineConfig } = require('./src/index.ts', import.meta.url);
 
 export default defineConfig({
   vue: true,
-  react: { files: ['**/*react.tsx'] },
-  solid: { files: ['**/*solid.tsx'] },
+  react: true,
+  solid: true,
   svelte: true,
   astro: true,
-  unocss: true,
+  unocss: false,
+  ignores: ['fixtures', '_fixtures'],
   formatter: {
     html: true,
     css: true,
@@ -18,11 +19,6 @@ export default defineConfig({
     toml: true,
   },
   overrides: {
-    'vue/multi-word-component-names': [
-      'warn',
-      {
-        ignores: ['index', 'App', '[id]'],
-      },
-    ],
+    'vue/multi-word-component-names': 'off',
   },
 });
