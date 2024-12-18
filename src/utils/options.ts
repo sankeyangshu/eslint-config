@@ -103,12 +103,20 @@ export async function createOptions(options: Partial<OptionsType> = {}) {
   };
 
   onDemandKeys.forEach((key) => {
-    opts[key] = createItemDemandOptions(rest[key], onDemandFiles[key]) as RequiredVueOptionsType;
+    if (key === 'vue') {
+      opts[key] = createItemDemandOptions(
+        key,
+        rest[key],
+        onDemandFiles[key]
+      ) as RequiredVueOptionsType;
+    } else {
+      opts[key] = createItemDemandOptions(key, rest[key], onDemandFiles[key]);
+    }
   });
 
   // If react-native is enabled, react must be enabled
   if (rest['react-native'] && !rest.react) {
-    opts.react = createItemDemandOptions(true, onDemandFiles.react);
+    opts.react = createItemDemandOptions('react', true, onDemandFiles.react);
   }
 
   opts.unocss = Boolean(unocss);
@@ -119,14 +127,29 @@ export async function createOptions(options: Partial<OptionsType> = {}) {
 /**
  * Create on demand rule options
  *
+ * @param key key
  * @param options options
  * @param files Default files
  */
 function createItemDemandOptions<K extends OnDemandRuleKey>(
+  key: K,
   options: OptionsType[K],
   files: string[]
 ) {
   if (!options) return undefined;
+
+  if (key === 'vue') {
+    const vueOptions: RequiredVueOptionsType = {
+      version: 3,
+      files,
+    };
+
+    if (typeof options === 'object') {
+      Object.assign(vueOptions, options);
+    }
+
+    return vueOptions;
+  }
 
   const itemOptions: RequiredRuleBaseOptionsType = {
     files,
