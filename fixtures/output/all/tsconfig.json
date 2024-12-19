@@ -6,6 +6,6 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }

@@ -1,5 +1,5 @@
 import { ensurePackages, interopDefault } from '../utils';
-import type { FlatConfigItemType, OptionsHasTypeScript, RequiredVueOptionsType } from '../types';
+import type { FlatConfigItemType, RequiredVueOptionsType } from '../types';
 import { createTypescriptRules } from './typescript';
 
 /**
@@ -10,7 +10,7 @@ import { createTypescriptRules } from './typescript';
  * @returns A list of flat config items.
  */
 export async function createVueConfig(
-  options?: RequiredVueOptionsType & OptionsHasTypeScript,
+  options?: RequiredVueOptionsType,
   overrides: Record<string, string> = {}
 ): Promise<FlatConfigItemType[]> {
   if (!options) return [];
@@ -57,20 +57,16 @@ export async function createVueConfig(
             jsx: true,
           },
           extraFileExtensions: ['.vue'],
-          parser: options.typescript
-            ? ((await interopDefault(import('@typescript-eslint/parser'))) as any)
-            : null,
+          parser: '@typescript-eslint/parser',
           sourceType: 'module',
         },
       },
       processor: pluginVue.processors!['.vue'],
-      plugins: options.typescript
-        ? {
-            '@typescript-eslint': pluginTs,
-          }
-        : {},
+      plugins: {
+        '@typescript-eslint': pluginTs,
+      },
       rules: {
-        ...(options.typescript && tsRules),
+        ...tsRules,
         ...pluginVue.configs.base.rules,
         ...vueRules,
         'vue/block-order': ['warn', { order: ['template', 'script', 'style'] }],
