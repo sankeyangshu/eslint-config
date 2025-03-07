@@ -1,5 +1,4 @@
 export * from './astro';
-export * from './command';
 export * from './disables';
 export * from './formatter';
 export * from './gitignore';

@@ -1,7 +1,6 @@
 import { FlatConfigComposer } from 'eslint-flat-config-utils';
 import {
   createAstroConfig,
-  createCommandConfig,
   createDisablesConfig,
   createFormatterConfig,
   createGitIgnoresConfig,
@@ -67,7 +66,6 @@ export async function defineConfig(
     createNodeConfig(overrideRecord.n),
     createJsdocConfig(overrideRecord.jsdoc),
     createImportsConfig(overrideRecord.import),
-    createCommandConfig(),
     createPerfectionistConfig(overrideRecord.perfectionist),
     createUnicornConfig(overrideRecord.unicorn),
     createTypescriptConfig(overrideRecord.ts)
