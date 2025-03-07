@@ -19,13 +19,13 @@ declare module 'eslint-plugin-i' {
 declare module 'eslint-plugin-vue' {
   export type VueConfigKey =
     | 'base'
-    | 'essential'
     | 'no-layout-rules'
+    | 'vue2-essential'
+    | 'vue2-recommended'
+    | 'vue2-strongly-recommended'
+    | 'essential'
     | 'recommended'
-    | 'strongly-recommended'
-    | 'vue3-essential'
-    | 'vue3-recommended'
-    | 'vue3-strongly-recommended';
+    | 'strongly-recommended';
 
   type VuePlugin = import('eslint').ESLint.Plugin & {
     configs: Record<VueConfigKey, import('eslint').ESLint.ConfigData>;

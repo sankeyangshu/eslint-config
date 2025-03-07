@@ -62,7 +62,13 @@ export async function createSvelteConfig(
       processor: pluginSvelte.processors.svelte,
       rules: {
         ...tsRules,
-        ...(pluginSvelte.configs.recommended.rules as FlatConfigItemType['rules']),
+        ...(pluginSvelte.configs['flat/recommended'].reduce(
+          (acc, config) => ({
+            ...acc,
+            ...config.rules,
+          }),
+          {}
+        ) as FlatConfigItemType['rules']),
         ...overrides,
         'prettier/prettier': [
           'warn',

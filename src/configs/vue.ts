@@ -31,8 +31,8 @@ export async function createVueConfig(
 
   const configKeys: VueConfigKey[] =
     version === 3
-      ? ['vue3-essential', 'vue3-strongly-recommended', 'vue3-recommended']
-      : ['essential', 'strongly-recommended', 'recommended'];
+      ? ['essential', 'strongly-recommended', 'recommended']
+      : ['vue2-essential', 'vue2-strongly-recommended', 'vue2-recommended'];
 
   const vueRules = configKeys.reduce((preRules, key) => {
     const config = pluginVue.configs[key];
