@@ -1,6 +1,6 @@
-import { GLOB_JSON, GLOB_JSON5, GLOB_JSONC } from '@/constants';
-import { interopDefault } from '@/utils';
-import type { FlatConfigItemType } from '@/types';
+import { GLOB_JSON, GLOB_JSON5, GLOB_JSONC } from '../constants';
+import { interopDefault } from '../utils';
+import type { FlatConfigItemType } from '../types';
 
 /**
  * Create a configuration for jsonc.

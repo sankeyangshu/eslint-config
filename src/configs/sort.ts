@@ -1,5 +1,5 @@
-import { interopDefault } from '@/utils';
-import type { FlatConfigItemType } from '@/types';
+import { interopDefault } from '../utils';
+import type { FlatConfigItemType } from '../types';
 
 /**
  * Creates a basic configuration for Perfectionist.
