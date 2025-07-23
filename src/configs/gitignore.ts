@@ -1,5 +1,18 @@
-import { interopDefault } from '../utils';
-import type { BaseOptionsType, FlatConfigItemType } from '../types';
+import createGitIgnoreConfig from 'eslint-config-flat-gitignore';
+import type { FlatGitignoreOptions } from 'eslint-config-flat-gitignore';
+import type { TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createGitIgnoresConfig}
+ */
+export type ConfigGitIgnoreOptions = Omit<FlatGitignoreOptions, 'strict'> & {
+  /**
+   * Throw an error if gitignore file not found.
+   *
+   * @default false
+   */
+  strict?: boolean;
+};
 
 /**
  * Create a configuration for ignores.
@@ -7,32 +20,14 @@ import type { BaseOptionsType, FlatConfigItemType } from '../types';
  * @param options Optional options for the config, either a boolean or an options object.
  * @returns A list of flat config items.
  */
-export async function createGitIgnoresConfig(options?: BaseOptionsType['gitignore']) {
-  if (!options) return [];
+export function createGitIgnoresConfig(options: ConfigGitIgnoreOptions = {}): TypedConfigItem[] {
+  // Won't throw error if gitignore is missing
+  options.strict ??= false;
 
-  const configs: FlatConfigItemType[] = [];
-
-  const configItem = await interopDefault(import('eslint-config-flat-gitignore')).then((r) => [
-    r(typeof options !== 'boolean' ? options : { strict: false }),
-  ]);
-
-  configs.push(...configItem);
-
-  return configs;
-}
-
-/**
- * Create a configuration for ignores.
- *
- * @param userIgnores Optional glob patterns to ignore, defaults to an empty list.
- * @returns A list of flat config items.
- */
-export async function createIgnoresConfig(
-  userIgnores: string[] = []
-): Promise<FlatConfigItemType[]> {
   return [
     {
-      ignores: [...userIgnores],
+      ...createGitIgnoreConfig(options),
+      name: 'sankeyangshu/gitignore',
     },
   ];
 }

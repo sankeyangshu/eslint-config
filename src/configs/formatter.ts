@@ -1,98 +1,127 @@
-import {
-  GLOB_CSS,
-  GLOB_HTML,
-  GLOB_LESS,
-  GLOB_MARKDOWN,
-  GLOB_POSTCSS,
-  GLOB_SCSS,
-  GLOB_TOML,
-  GLOB_YAML,
-} from '../constants';
-import { ensurePackages, interopDefault } from '../utils';
-import type {
-  FlatConfigItemType,
-  OptionsType,
-  PartialPrettierExtendedOptionsType,
-  PrettierParser,
-} from '../types';
+import { GLOB_CSS, GLOB_HTML, GLOB_LESS, GLOB_POSTCSS, GLOB_SCSS, PRETTIER_DEFAULT_OPTIONS } from '../constants';
+import { parserPlain } from '../eslint';
+import { ensurePackages, interopDefault, mergePrettierOptions } from '../utils';
+import type { PrettierOptions, TypedConfigItem } from '../types';
 
 /**
- * Create a configuration for Prettier.
- *
- * @param options Optional options for the config. See {@link OptionsType.formatter} for more
- *   details.
- * @param prettierRules Optional options for prettier. See {@link PartialPrettierExtendedOptionsType}
- *   for more details.
- * @returns A list of flat config items.
+ * Options type of {@link createFormatterConfig}
  */
-export async function createFormatterConfig(
-  options?: OptionsType['formatter'],
-  prettierRules: PartialPrettierExtendedOptionsType = {}
-): Promise<FlatConfigItemType[]> {
-  const { html = true, css = true, markdown, yaml, toml } = options || {};
+export interface ConfigFormatOptions {
+  /**
+   * Enable formatter support for css, less, scss, sass and etc.
+   *
+   * @default true
+   */
+  css?: boolean;
 
-  const [pluginPrettier, parserPlain] = await Promise.all([
-    interopDefault(import('eslint-plugin-prettier')),
-    interopDefault(import('eslint-parser-plain')),
-  ]);
+  /**
+   * Enable formatter support for html
+   *
+   * @default true
+   */
+  html?: boolean;
 
-  function createPrettierFormatter(files: string[], parser: PrettierParser, plugins?: string[]) {
-    const rules: PartialPrettierExtendedOptionsType = {
-      ...prettierRules,
-      parser,
-    };
+  /**
+   * Options for prettier
+   */
+  prettierOptions?: PrettierOptions;
+}
 
-    if (plugins?.length) {
-      rules.plugins = [...(rules.plugins || []), ...plugins];
-    }
+/**
+ * Config to use a formatter
+ *
+ * @see {@link https://github.com/antfu/eslint-plugin-format}
+ *
+ * @param options - {@link ConfigFormatOptions}
+ * @returns ESLint configs
+ */
+export async function createFormatterConfig(options: ConfigFormatOptions = {}): Promise<TypedConfigItem[]> {
+  await ensurePackages(['eslint-plugin-format']);
 
-    const config: FlatConfigItemType = {
-      files,
+  const pluginFormat = await interopDefault(import('eslint-plugin-format'));
+
+  const { css: enableCSS = true, html: enableHTML = true, prettierOptions = {} } = options;
+
+  const sharedPrettierOptions: PrettierOptions = {
+    ...PRETTIER_DEFAULT_OPTIONS,
+    ...prettierOptions,
+  };
+
+  const configs: TypedConfigItem[] = [
+    {
+      name: 'sankeyangshu/format/setup',
+      plugins: {
+        format: pluginFormat,
+      },
+    },
+  ];
+
+  if (enableCSS) {
+    configs.push(
+      {
+        name: 'sankeyangshu/format/css',
+        files: [GLOB_CSS, GLOB_POSTCSS],
+        languageOptions: {
+          parser: parserPlain,
+        },
+        rules: {
+          'format/prettier': [
+            'error',
+            mergePrettierOptions(sharedPrettierOptions, {
+              parser: 'css',
+            }),
+          ],
+        },
+      },
+      {
+        name: 'sankeyangshu/format/scss',
+        files: [GLOB_SCSS],
+        languageOptions: {
+          parser: parserPlain,
+        },
+        rules: {
+          'format/prettier': [
+            'error',
+            mergePrettierOptions(sharedPrettierOptions, {
+              parser: 'scss',
+            }),
+          ],
+        },
+      },
+      {
+        name: 'sankeyangshu/format/less',
+        files: [GLOB_LESS],
+        languageOptions: {
+          parser: parserPlain,
+        },
+        rules: {
+          'format/prettier': [
+            'error',
+            mergePrettierOptions(sharedPrettierOptions, {
+              parser: 'less',
+            }),
+          ],
+        },
+      }
+    );
+  }
+
+  if (enableHTML) {
+    configs.push({
+      name: 'sankeyangshu/format/html',
+      files: [GLOB_HTML],
       languageOptions: {
         parser: parserPlain,
       },
-      plugins: {
-        prettier: pluginPrettier,
-      },
       rules: {
-        'prettier/prettier': ['warn', rules],
+        'format/prettier': [
+          'error',
+          mergePrettierOptions(sharedPrettierOptions, {
+            parser: 'html',
+          }),
+        ],
       },
-    };
-
-    return config;
-  }
-
-  const configs: FlatConfigItemType[] = [];
-
-  if (css) {
-    const cssConfig = createPrettierFormatter([GLOB_CSS, GLOB_POSTCSS], 'css');
-    const scssConfig = createPrettierFormatter([GLOB_SCSS], 'scss');
-    const lessConfig = createPrettierFormatter([GLOB_LESS], 'less');
-
-    configs.push(cssConfig, scssConfig, lessConfig);
-  }
-
-  if (html) {
-    const htmlConfig = createPrettierFormatter([GLOB_HTML], 'html');
-    configs.push(htmlConfig);
-  }
-
-  if (markdown) {
-    const markdownConfig = createPrettierFormatter([GLOB_MARKDOWN], 'markdown');
-    configs.push(markdownConfig);
-  }
-
-  if (yaml) {
-    const yamlConfig = createPrettierFormatter([GLOB_YAML], 'yaml');
-    configs.push(yamlConfig);
-  }
-
-  if (toml) {
-    await ensurePackages(['@toml-tools/parser', 'prettier-plugin-toml']);
-
-    const tomlConfig = createPrettierFormatter([GLOB_TOML], 'toml', ['prettier-plugin-toml']);
-
-    configs.push(tomlConfig);
+    });
   }
 
   return configs;

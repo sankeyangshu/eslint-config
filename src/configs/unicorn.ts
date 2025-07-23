@@ -1,38 +1,136 @@
-import { interopDefault } from '../utils';
-import type { FlatConfigItemType } from '../types';
+import { pluginUnicorn } from '../eslint';
+import type { OptionsOverrides, TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createUnicornConfig}
+ */
+export type ConfigUnicornOptions = OptionsOverrides;
+
+const disabledRules: TypedConfigItem['rules'] = {
+  'unicorn/better-regex': 'off',
+  'unicorn/explicit-length-check': 'off',
+  'unicorn/no-array-callback-reference': 'off',
+  /**
+   * @see https://caniuse.com/?search=globalThis
+   */
+  'unicorn/prefer-global-this': 'off',
+  'unicorn/prefer-top-level-await': 'off',
+};
 
 /**
  * Creates a basic ESLint configuration for the Unicorn plugin.
  *
- * @param overrides - Optional overrides for the default rules.
+ * @see {@link https://github.com/sindresorhus/eslint-plugin-unicorn}
+ *
+ * @param options - {@link ConfigUnicornOptions}
  * @returns A list of flat config items with Unicorn plugin settings and rules.
  */
-export async function createUnicornConfig(
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
-  const pluginUnicorn = await interopDefault(import('eslint-plugin-unicorn'));
-
+export function createUnicornConfig(options: ConfigUnicornOptions = {}): TypedConfigItem[] {
   return [
     {
+      name: 'sankeyangshu/unicorn',
       plugins: {
         unicorn: pluginUnicorn,
       },
       rules: {
+        'unicorn/consistent-assert': 'error',
+        'unicorn/consistent-existence-index-check': 'error',
         'unicorn/error-message': 'error',
         'unicorn/escape-case': 'error',
-        'unicorn/no-instanceof-array': 'error',
-        'unicorn/no-new-array': 'error',
+        'unicorn/new-for-builtins': 'error',
+        'unicorn/no-accessor-recursion': 'error',
+        'unicorn/no-console-spaces': 'error',
+        'unicorn/no-for-loop': 'error',
+        'unicorn/no-hex-escape': 'error',
+        'unicorn/no-instanceof-builtins': 'error',
+        'unicorn/no-lonely-if': 'error',
         'unicorn/no-new-buffer': 'error',
-        'unicorn/number-literal-case': 'error',
-        'unicorn/prefer-dom-node-text-content': 'error',
+        'unicorn/no-static-only-class': 'error',
+        'unicorn/no-typeof-undefined': 'error',
+        'unicorn/no-unnecessary-await': 'error',
+        'unicorn/prefer-import-meta-properties': 'error',
         'unicorn/prefer-includes': 'error',
+        'unicorn/prefer-keyboard-event-key': 'error',
+        'unicorn/prefer-math-min-max': 'error',
+        'unicorn/prefer-math-trunc': 'error',
+        'unicorn/prefer-modern-math-apis': 'error',
+        'unicorn/prefer-negative-index': 'error',
         'unicorn/prefer-node-protocol': 'error',
-        'unicorn/prefer-number-properties': 'error',
-        'unicorn/prefer-string-starts-ends-with': 'error',
+        'unicorn/prefer-optional-catch-binding': 'error',
+        'unicorn/prefer-prototype-methods': 'error',
+        'unicorn/prefer-reflect-apply': 'error',
+        'unicorn/prefer-structured-clone': 'error',
+        'unicorn/switch-case-braces': ['error', 'avoid'],
+        /**
+         * @pg Error
+         */
+        'unicorn/catch-error-name': [
+          'error',
+          {
+            name: 'err',
+            ignore: ['^_.'],
+          },
+        ],
+        'unicorn/custom-error-definition': 'error',
         'unicorn/prefer-type-error': 'error',
         'unicorn/throw-new-error': 'error',
+        /**
+         * @pg Number
+         */
+        'unicorn/no-zero-fractions': 'error',
+        'unicorn/number-literal-case': 'error',
+        'unicorn/prefer-number-properties': 'error',
+        /**
+         * @pg RegExp
+         */
+        'unicorn/prefer-regexp-test': 'error',
+        /**
+         * @pg Date
+         */
+        'unicorn/consistent-date-clone': 'error',
+        'unicorn/prefer-date-now': 'error',
+        /**
+         * @pg String
+         */
+        'unicorn/prefer-code-point': 'error',
+        'unicorn/prefer-string-slice': 'error',
+        'unicorn/prefer-string-starts-ends-with': 'error',
+        'unicorn/prefer-string-trim-start-end': 'error',
+        /**
+         * @pg DOM
+         */
+        'unicorn/no-invalid-remove-event-listener': 'error',
+        'unicorn/prefer-add-event-listener': 'error',
+        'unicorn/prefer-dom-node-append': 'error',
+        'unicorn/prefer-dom-node-dataset': 'error',
+        'unicorn/prefer-dom-node-remove': 'error',
+        'unicorn/prefer-dom-node-text-content': 'error',
+        'unicorn/prefer-modern-dom-apis': 'error',
+        'unicorn/prefer-query-selector': 'error',
+        /**
+         * @pg Array
+         */
+        'unicorn/no-array-method-this-argument': 'error',
+        'unicorn/no-new-array': 'error',
+        'unicorn/no-unnecessary-array-flat-depth': 'error',
+        'unicorn/no-unnecessary-array-splice-count': 'error',
+        'unicorn/no-unnecessary-slice-end': 'error',
+        'unicorn/prefer-array-find': 'error',
+        'unicorn/prefer-array-flat-map': 'error',
+        'unicorn/prefer-array-index-of': 'error',
+        'unicorn/prefer-array-some': 'error',
+        'unicorn/prefer-single-call': 'error',
+        'unicorn/require-array-join-separator': 'error',
+        /**
+         * @pg Set
+         */
+        'unicorn/prefer-set-has': 'error',
+        'unicorn/prefer-set-size': 'error',
 
-        ...overrides,
+        ...disabledRules,
+
+        // Overrides rules
+        ...options.overrides,
       },
     },
   ];

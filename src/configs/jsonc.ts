@@ -1,33 +1,60 @@
 import { GLOB_JSON, GLOB_JSON5, GLOB_JSONC } from '../constants';
-import { interopDefault } from '../utils';
-import type { FlatConfigItemType } from '../types';
+import { parserJsonc, pluginJsonc } from '../eslint';
+import type { OptionsFiles, OptionsOverrides, TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createJsoncConfig}
+ */
+export type ConfigJsoncOptions = OptionsOverrides &
+  OptionsFiles & {
+    /**
+     * Whether disable prettier related rules
+     */
+    prettier?: boolean;
+  };
+
+/**
+ * @see {@link https://github.com/ota-meshi/eslint-plugin-jsonc/blob/master/lib/configs/base.ts}
+ */
+const disabledCoreRules: TypedConfigItem['rules'] = {
+  'no-unused-expressions': 'off',
+  'no-unused-vars': 'off',
+  strict: 'off',
+};
 
 /**
  * Create a configuration for jsonc.
  *
- * @param overrides - Optional overrides for default rules.
- * @returns A list of flat config items for ESLint.
+ * @see {@link https://ota-meshi.github.io/eslint-plugin-jsonc}
+ *
+ * @param options - {@link ConfigJsoncOptions}
+ * @returns ESLint configs
  */
-export async function createJsoncConfig(
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
-  const [pluginJsonc, parserJsonc] = await Promise.all([
-    interopDefault(import('eslint-plugin-jsonc')),
-    interopDefault(import('jsonc-eslint-parser')),
-  ] as const);
+export function createJsoncConfig(options: ConfigJsoncOptions = {}): TypedConfigItem[] {
+  const { files = [GLOB_JSON, GLOB_JSON5, GLOB_JSONC] } = options;
 
   return [
     {
+      name: 'sankeyangshu/jsonc',
+      files,
       plugins: {
         jsonc: pluginJsonc,
       },
-    },
-    {
-      files: [GLOB_JSON, GLOB_JSON5, GLOB_JSONC],
       languageOptions: {
         parser: parserJsonc,
       },
       rules: {
+        'jsonc/array-bracket-spacing': ['error', 'never'],
+        'jsonc/comma-dangle': ['error', 'never'],
+        'jsonc/comma-style': ['error', 'last'],
+        'jsonc/indent': ['error', 2],
+        'jsonc/key-spacing': [
+          'error',
+          {
+            afterColon: true,
+            beforeColon: false,
+          },
+        ],
         'jsonc/no-bigint-literals': 'error',
         'jsonc/no-binary-expression': 'error',
         'jsonc/no-binary-numeric-literals': 'error',
@@ -51,22 +78,49 @@ export async function createJsoncConfig(
         'jsonc/no-undefined-value': 'error',
         'jsonc/no-unicode-codepoint-escapes': 'error',
         'jsonc/no-useless-escape': 'error',
+        'jsonc/object-curly-newline': [
+          'error',
+          {
+            consistent: true,
+            multiline: true,
+          },
+        ],
+        'jsonc/object-curly-spacing': ['error', 'always'],
+        'jsonc/object-property-newline': [
+          'error',
+          {
+            allowMultiplePropertiesPerLine: true,
+          },
+        ],
+        'jsonc/quote-props': 'error',
+        'jsonc/quotes': 'error',
         'jsonc/space-unary-ops': 'error',
         'jsonc/valid-json-number': 'error',
         'jsonc/vue-custom-block/no-parsing-error': 'error',
 
-        'jsonc/array-bracket-spacing': ['error', 'never'],
-        'jsonc/comma-dangle': ['error', 'never'],
-        'jsonc/comma-style': ['error', 'last'],
-        'jsonc/indent': ['error', 2],
-        'jsonc/key-spacing': ['error', { afterColon: true, beforeColon: false }],
-        'jsonc/object-curly-newline': ['error', { consistent: true, multiline: true }],
-        'jsonc/object-curly-spacing': ['error', 'always'],
-        'jsonc/object-property-newline': ['error', { allowMultiplePropertiesPerLine: true }],
-        'jsonc/quote-props': 'error',
-        'jsonc/quotes': 'error',
+        ...disabledCoreRules,
 
-        ...overrides,
+        ...(options.prettier
+          ? {
+              'jsonc/array-bracket-newline': 'off',
+              'jsonc/array-bracket-spacing': 'off',
+              'jsonc/array-element-newline': 'off',
+              'jsonc/comma-dangle': 'off',
+              'jsonc/comma-style': 'off',
+              'jsonc/indent': 'off',
+              'jsonc/key-spacing': 'off',
+              'jsonc/no-floating-decimal': 'off',
+              'jsonc/object-curly-newline': 'off',
+              'jsonc/object-curly-spacing': 'off',
+              'jsonc/object-property-newline': 'off',
+              'jsonc/quote-props': 'off',
+              'jsonc/quotes': 'off',
+              'jsonc/space-unary-ops': 'off',
+            }
+          : {}),
+
+        // Overrides rules
+        ...options.overrides,
       },
     },
   ];

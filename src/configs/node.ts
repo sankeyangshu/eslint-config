@@ -1,33 +1,38 @@
-import { interopDefault } from '../utils';
-import type { FlatConfigItemType } from '../types';
+import { pluginNode } from '../eslint';
+import type { OptionsOverrides, TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createNodeConfig}
+ */
+export type ConfigNodeOptions = OptionsOverrides;
 
 /**
  * Create a basic configuration for Node.
  *
- * @param overrides Optional overrides for the config.
+ * @see {@link https://github.com/eslint-community/eslint-plugin-n}
+ *
+ * @param options - {@link ConfigNodeOptions}
  * @returns A list of flat config items.
  */
-export async function createNodeConfig(
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
-  const pluginNode = await interopDefault(import('eslint-plugin-n'));
-
+export function createNodeConfig(options: ConfigNodeOptions = {}): TypedConfigItem[] {
   return [
     {
+      name: 'sankeyangshu/node',
       plugins: {
-        n: pluginNode,
+        node: pluginNode,
       },
       rules: {
-        'n/handle-callback-err': ['error', '^(err|error)$'],
-        'n/no-deprecated-api': 'error',
-        'n/no-exports-assign': 'error',
-        'n/no-new-require': 'error',
-        'n/no-path-concat': 'error',
-        'n/prefer-global/buffer': ['error', 'never'],
-        'n/prefer-global/process': ['error', 'never'],
-        'n/process-exit-as-throw': 'error',
+        'node/handle-callback-err': ['error', '^(err|error)$'],
+        'node/no-deprecated-api': 'error',
+        'node/no-exports-assign': 'error',
+        'node/no-new-require': 'error',
+        'node/no-path-concat': 'error',
+        'node/prefer-global/buffer': ['error', 'never'],
+        'node/prefer-global/process': ['error', 'never'],
+        'node/process-exit-as-throw': 'error',
 
-        ...overrides,
+        // Overrides rules
+        ...options.overrides,
       },
     },
   ];

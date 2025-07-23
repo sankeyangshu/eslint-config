@@ -1,33 +1,49 @@
 import { ensurePackages, interopDefault } from '../utils';
-import type { FlatConfigItemType } from '../types';
+import type { OptionsOverrides, TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createUnoCssConfig}
+ */
+export type ConfigUnoCSSOptions = OptionsOverrides & {
+  /**
+   * Enable attributify sort order
+   *
+   * @default false
+   */
+  attributify?: boolean;
+};
 
 /**
  * Creates a basic configuration for UnoCSS.
  *
- * @param enable Optional flag to enable this configuration; defaults to `true`.
- * @param overrides Optional overrides for the config.
+ * @see {@link https://github.com/unocss/unocss/tree/main/packages-integrations/eslint-plugin}
+ *
+ * @param options - {@link ConfigUnoCSSOptions}
  * @returns A list of flat config items.
  */
-export async function createUnoCssConfig(
-  enable?: boolean,
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
-  if (!enable) return [];
-
+export async function createUnoCssConfig(options: ConfigUnoCSSOptions = {}): Promise<TypedConfigItem[]> {
   await ensurePackages(['@unocss/eslint-plugin']);
 
-  const pluginUnoCSS = await interopDefault(interopDefault(import('@unocss/eslint-plugin')));
+  const pluginUnoCSS = await interopDefault(import('@unocss/eslint-plugin'));
+
+  const { attributify = false } = options;
 
   return [
     {
+      name: 'sankeyangshu/unocss',
       plugins: {
         unocss: pluginUnoCSS,
       },
       rules: {
         'unocss/order': 'warn',
-        'unocss/order-attributify': 'off',
-        'unocss/blocklist': 'off',
-        ...overrides,
+        ...(attributify
+          ? {
+              'unocss/order-attributify': 'warn',
+            }
+          : {}),
+
+        // Overrides rules
+        ...options.overrides,
       },
     },
   ];

@@ -1,120 +1,390 @@
+import { mergeProcessors } from 'eslint-merge-processors';
+import { GLOB_VUE } from '../constants';
+import { parserTypeScript, pluginTypeScript } from '../eslint';
 import { ensurePackages, interopDefault } from '../utils';
-import type { FlatConfigItemType, RequiredVueOptionsType } from '../types';
-import { createTypescriptRules } from './typescript';
+import type { Options as VueBlocksOptions } from 'eslint-processor-vue-blocks';
+import type { ESLintProcessor, OptionsFiles, OptionsOverrides, OptionsShareable, TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createVueConfig}
+ */
+export type ConfigVueOptions = OptionsFiles &
+  OptionsOverrides &
+  OptionsShareable & {
+    /**
+     * Create virtual files for Vue SFC blocks to enable linting.
+     *
+     * @see https://github.com/antfu/eslint-processor-vue-blocks
+     *
+     * @default true
+     */
+    sfcBlocks?: boolean | VueBlocksOptions;
+  };
+
+const disabledRules: TypedConfigItem['rules'] = {
+  'vue/multi-word-component-names': 'off',
+  'vue/no-setup-props-reactivity-loss': 'off',
+  'vue/no-v-html': 'off',
+  'vue/no-v-text-v-html-on-component': 'off',
+  'vue/require-default-prop': 'off',
+  'vue/require-prop-types': 'off',
+};
+
+const extensionRules: TypedConfigItem['rules'] = {
+  'vue/array-bracket-spacing': ['error', 'never'],
+  'vue/arrow-spacing': ['error', { after: true, before: true }],
+  'vue/block-spacing': ['error', 'always'],
+  'vue/brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
+  'vue/comma-dangle': ['error', 'always-multiline'],
+  'vue/comma-spacing': ['error', { after: true, before: false }],
+  'vue/comma-style': ['error', 'last'],
+  'vue/dot-location': ['error', 'property'],
+  'vue/dot-notation': ['error', { allowKeywords: true }],
+  'vue/eqeqeq': ['error', 'smart'],
+  'vue/key-spacing': ['error', { afterColon: true, beforeColon: false }],
+  'vue/keyword-spacing': ['error', { after: true, before: true }],
+  'vue/no-constant-condition': 'error',
+  'vue/no-empty-pattern': 'error',
+  'vue/no-extra-parens': ['error', 'functions'],
+  'vue/no-loss-of-precision': 'error',
+  'vue/no-restricted-syntax': ['error', 'DebuggerStatement', 'LabeledStatement', 'WithStatement'],
+  'vue/no-sparse-arrays': 'error',
+  'vue/object-curly-newline': [
+    'error',
+    {
+      consistent: true,
+      multiline: true,
+    },
+  ],
+  'vue/object-curly-spacing': ['error', 'always'],
+  'vue/object-property-newline': [
+    'error',
+    {
+      allowMultiplePropertiesPerLine: true,
+    },
+  ],
+  'vue/object-shorthand': [
+    'error',
+    'always',
+    {
+      avoidQuotes: true,
+      ignoreConstructors: false,
+    },
+  ],
+  'vue/operator-linebreak': ['error', 'before'],
+  'vue/prefer-template': 'error',
+  'vue/quote-props': ['error', 'consistent-as-needed'],
+  'vue/space-in-parens': ['error', 'never'],
+  'vue/space-infix-ops': 'error',
+  'vue/space-unary-ops': [
+    'error',
+    {
+      nonwords: false,
+      words: true,
+    },
+  ],
+  'vue/template-curly-spacing': 'error',
+};
+
+const unCategorizedRules: TypedConfigItem['rules'] = {
+  'vue/block-order': [
+    'error',
+    {
+      order: ['script', 'template', 'style'],
+    },
+  ],
+  'vue/block-tag-newline': [
+    'error',
+    {
+      multiline: 'always',
+      singleline: 'always',
+    },
+  ],
+  'vue/component-api-style': ['error', ['script-setup', 'composition']],
+  'vue/component-name-in-template-casing': [
+    'error',
+    'PascalCase',
+    {
+      ignores: ['slot', 'component'],
+
+      // Force auto-import components to be PascalCase
+      registeredComponentsOnly: false,
+    },
+  ],
+  'vue/component-options-name-casing': ['error', 'PascalCase'],
+  'vue/custom-event-name-casing': ['error', 'camelCase'],
+  'vue/define-emits-declaration': ['error', 'type-literal'],
+  'vue/define-macros-order': [
+    'error',
+    {
+      defineExposeLast: true,
+      order: ['defineProps', 'defineEmits', 'defineOptions', 'defineSlots', 'defineModel'],
+    },
+  ],
+  'vue/define-props-declaration': ['error', 'type-based'],
+  'vue/define-props-destructuring': [
+    'error',
+    {
+      destructure: 'never',
+    },
+  ],
+  'vue/enforce-style-attribute': [
+    'error',
+    {
+      allow: ['scoped', 'plain'],
+    },
+  ],
+  'vue/html-button-has-type': [
+    'error',
+    {
+      button: true,
+      reset: true,
+      submit: true,
+    },
+  ],
+  'vue/html-comment-content-newline': [
+    'error',
+    {
+      multiline: 'always',
+      singleline: 'ignore',
+    },
+    {
+      exceptions: ['*'],
+    },
+  ],
+  'vue/html-comment-content-spacing': [
+    'error',
+    'always',
+    {
+      exceptions: ['-'],
+    },
+  ],
+  'vue/html-comment-indent': ['error', 2],
+  'vue/next-tick-style': ['error', 'promise'],
+  'vue/no-deprecated-delete-set': 'error',
+  'vue/no-deprecated-model-definition': [
+    'error',
+    {
+      allowVue3Compat: true,
+    },
+  ],
+  'vue/no-duplicate-attr-inheritance': [
+    'error',
+    {
+      checkMultiRootNodes: true,
+    },
+  ],
+  'vue/no-empty-component-block': 'error',
+  'vue/no-irregular-whitespace': 'error',
+  'vue/no-multiple-objects-in-class': 'error',
+  'vue/no-ref-object-reactivity-loss': 'error',
+  'vue/no-required-prop-with-default': [
+    'error',
+    {
+      autofix: true,
+    },
+  ],
+  'vue/no-restricted-v-bind': ['error', '/^v-/'],
+  'vue/no-static-inline-styles': [
+    'error',
+    {
+      allowBinding: true,
+    },
+  ],
+  'vue/no-unused-emit-declarations': 'error',
+  'vue/no-use-v-else-with-v-for': 'error',
+  'vue/no-useless-v-bind': 'error',
+  'vue/no-v-text': 'error',
+  'vue/padding-line-between-blocks': 'error',
+  'vue/prefer-define-options': 'error',
+  'vue/prefer-prop-type-boolean-first': 'error',
+  'vue/prefer-separate-static-class': 'error',
+  'vue/prefer-true-attribute-shorthand': ['error', 'always'],
+  'vue/prefer-use-template-ref': 'error',
+  'vue/require-macro-variable-name': [
+    'error',
+    {
+      defineEmits: 'emits',
+      defineProps: 'props',
+      defineSlots: 'slots',
+      useAttrs: 'attrs',
+      useSlots: 'slots',
+    },
+  ],
+  'vue/require-typed-object-prop': 'error',
+  'vue/slot-name-casing': ['error', 'kebab-case'],
+  'vue/v-for-delimiter-style': ['error', 'in'],
+  'vue/valid-define-options': 'error',
+};
 
 /**
  * Create a basic configuration for Vue.
  *
- * @param options Optional options for the config.
- * @param overrides Optional overrides for the config.
+ * @see {@link https://github.com/vuejs/eslint-plugin-vue}
+ *
+ * @param options - {@link ConfigVueOptions}
  * @returns A list of flat config items.
  */
-export async function createVueConfig(
-  options?: RequiredVueOptionsType,
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
-  if (!options) return [];
-
-  const { version = 3, files } = options;
-
+export async function createVueConfig(options: ConfigVueOptions = {}): Promise<TypedConfigItem[]> {
   await ensurePackages(['eslint-plugin-vue', 'vue-eslint-parser']);
 
-  type VueConfigKey = import('eslint-plugin-vue').VueConfigKey;
-
-  const [pluginVue, parserVue, pluginTs] = await Promise.all([
+  const [pluginVue, parserVue, processorVueBlocks] = await Promise.all([
     interopDefault(import('eslint-plugin-vue')),
     interopDefault(import('vue-eslint-parser')),
-    interopDefault(import('@typescript-eslint/eslint-plugin')),
+    interopDefault(import('eslint-processor-vue-blocks')),
   ]);
 
-  const tsRules = await createTypescriptRules();
+  const { files = [GLOB_VUE], extraFileExtensions = [] } = options;
+  const sfcBlocks: false | VueBlocksOptions = options.sfcBlocks === true ? {} : (options.sfcBlocks ?? {});
 
-  const configKeys: VueConfigKey[] =
-    version === 3
-      ? ['essential', 'strongly-recommended', 'recommended']
-      : ['vue2-essential', 'vue2-strongly-recommended', 'vue2-recommended'];
+  function getVueProcessor(): ESLintProcessor {
+    const processorVueSFC = pluginVue.processors['.vue'] as ESLintProcessor;
 
-  const vueRules = configKeys.reduce((preRules, key) => {
-    const config = pluginVue.configs[key];
-    return {
-      ...preRules,
-      ...config.rules,
-    };
-  }, {});
+    if (!sfcBlocks) {
+      return processorVueSFC;
+    }
+
+    return mergeProcessors([
+      processorVueSFC,
+      processorVueBlocks({
+        ...sfcBlocks,
+        blocks: {
+          styles: true,
+          ...sfcBlocks.blocks,
+        },
+      }),
+    ]);
+  }
+
+  const sharedRules: TypedConfigItem['rules'] = {
+    ...pluginVue.configs.base.rules,
+    ...pluginVue.configs.essential.rules,
+    ...pluginVue.configs['strongly-recommended'].rules,
+    ...pluginVue.configs.recommended.rules,
+  };
 
   return [
     {
+      name: 'sankeyangshu/vue/setup',
       plugins: {
+        '@typescript-eslint': pluginTypeScript,
         vue: pluginVue,
       },
     },
     {
+      name: 'sankeyangshu/vue/rules',
       files,
+      processor: getVueProcessor(),
       languageOptions: {
         parser: parserVue,
         parserOptions: {
+          ecmaVersion: 'latest',
+          extraFileExtensions,
+          parser: parserTypeScript,
+          sourceType: 'module',
           ecmaFeatures: {
             jsx: true,
           },
-          extraFileExtensions: ['.vue'],
-          parser: '@typescript-eslint/parser',
-          sourceType: 'module',
         },
       },
-      processor: pluginVue.processors!['.vue'],
-      plugins: {
-        '@typescript-eslint': pluginTs,
-      },
       rules: {
-        ...tsRules,
-        ...pluginVue.configs.base.rules,
-        ...vueRules,
-        'vue/block-order': ['warn', { order: ['template', 'script', 'style'] }],
-        'vue/component-api-style': ['warn', ['script-setup', 'composition']],
-        'vue/component-name-in-template-casing': [
-          'warn',
-          'PascalCase',
-          { registeredComponentsOnly: false, ignores: [] },
-        ],
-        'vue/component-options-name-casing': ['warn', 'PascalCase'],
-        'vue/custom-event-name-casing': ['warn', 'camelCase'],
-        'vue/define-emits-declaration': ['warn', 'type-based'],
-        'vue/define-macros-order': 'off',
-        'vue/define-props-declaration': ['warn', 'type-based'],
-        'vue/html-comment-content-newline': 'warn',
-        'vue/multi-word-component-names': 'warn',
-        'vue/next-tick-style': ['warn', 'promise'],
-        'vue/no-duplicate-attr-inheritance': 'warn',
-        'vue/no-required-prop-with-default': 'warn',
-        'vue/no-static-inline-styles': 'warn',
-        'vue/no-template-target-blank': 'error',
-        'vue/no-this-in-before-route-enter': 'error',
-        'vue/no-undef-properties': 'warn',
-        'vue/no-unsupported-features': 'warn',
-        'vue/no-unused-emit-declarations': 'warn',
-        'vue/no-unused-properties': 'warn',
-        'vue/no-unused-refs': 'warn',
-        'vue/no-use-v-else-with-v-for': 'error',
-        'vue/no-useless-mustaches': 'warn',
-        'vue/no-useless-v-bind': 'error',
-        'vue/no-v-text': 'warn',
-        'vue/padding-line-between-blocks': 'warn',
-        'vue/prefer-define-options': 'warn',
-        'vue/prefer-separate-static-class': 'warn',
-        'vue/prop-name-casing': ['warn', 'camelCase'],
-        'vue/require-macro-variable-name': [
-          'warn',
+        ...sharedRules,
+
+        'vue/attributes-order': [
+          'error',
           {
-            defineProps: 'props',
-            defineEmits: 'emit',
-            defineSlots: 'slots',
-            useSlots: 'slots',
-            useAttrs: 'attrs',
+            alphabetical: false,
+            order: [
+              'EVENTS', // `@click="functionCall"`, `v-on="event"`
+              'TWO_WAY_BINDING', // `v-model`
+              'OTHER_DIRECTIVES', // `v-custom-directive`
+              'LIST_RENDERING', // `v-for item in items`
+              'CONDITIONALS', //  `v-if`, `v-show`, `v-cloak`
+              'CONTENT', // `v-text`, `v-html`
+              'SLOT', // `v-slot`, `slot`
+              'UNIQUE', // `ref`, `key`
+              'DEFINITION', // `is`, `v-is`
+              'ATTR_DYNAMIC', // `v-bind:prop="foo"`, `:prop="foo"`
+              // `OTHER_ATTR`, // `custom-prop="foo"`, `:prop="foo"`, `disabled`
+              'RENDER_MODIFIERS', // `v-once`, `v-pre`
+              'GLOBAL', // `id`
+              'ATTR_STATIC', // `prop="foo", `static attributes
+              'ATTR_SHORTHAND_BOOL', // `disabled`, prop shorthand
+            ],
           },
         ],
-        'vue/valid-define-options': 'warn',
+        'vue/html-self-closing': [
+          'error',
+          {
+            math: 'always',
+            svg: 'always',
+            html: {
+              component: 'always',
+              normal: 'always',
+              void: 'always',
+            },
+          },
+        ],
+        'vue/max-attributes-per-line': [
+          'error',
+          {
+            multiline: 1,
+            singleline: 1,
+          },
+        ],
+        'vue/order-in-components': [
+          'error',
+          {
+            order: [
+              'el',
+              'name',
+              'key',
+              'parent',
+              'functional',
+              ['provide', 'inject'],
+              ['delimiters', 'comments'],
+              ['components', 'directives', 'filters'],
+              'extends',
+              'mixins',
+              'layout',
+              'middleware',
+              'validate',
+              'scrollToTop',
+              'transition',
+              'loading',
+              'inheritAttrs',
+              'model',
+              ['props', 'propsData'],
+              'slots',
+              'expose',
+              'emits',
+              'setup',
+              'asyncData',
+              'computed',
+              'data',
+              'fetch',
+              'head',
+              'methods',
+              ['template', 'render'],
+              'watch',
+              'watchQuery',
+              'LIFECYCLE_HOOKS',
+              'renderError',
+              'ROUTER_GUARDS',
+            ],
+          },
+        ],
+        'vue/prop-name-casing': ['error', 'camelCase'],
+        'vue/this-in-template': ['error', 'never'],
 
-        ...overrides,
+        ...disabledRules,
+
+        ...extensionRules,
+
+        ...unCategorizedRules,
+
+        // Overrides rules
+        ...options.overrides,
       },
     },
   ];

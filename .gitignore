@@ -30,3 +30,7 @@ _fixtures
 .history
 
 .eslint-config-inspector
+
+# eslint-typegen
+src/types/typegen.ts
+src/types/typegen.d.ts

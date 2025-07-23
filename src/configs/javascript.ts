@@ -1,19 +1,60 @@
-import jsRules from '@eslint/js';
-import pluginUnusedImports from 'eslint-plugin-unused-imports';
+import jsConfig from '@eslint/js';
 import globals from 'globals';
-import type { FlatConfigItemType } from '../types';
+import { GLOB_JSX, GLOB_TSX } from '../constants';
+import { pluginUnusedImports } from '../eslint';
+import type { OptionsOverrides, TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createJavascriptConfig}
+ */
+export type ConfigJavaScriptOptions = OptionsOverrides & {
+  /**
+   * Enable strict checking for JavaScript files
+   * @default false
+   */
+  strict?: boolean;
+};
+
+const strictRules: TypedConfigItem['rules'] = {
+  complexity: ['error', { max: 30 }],
+  'max-depth': ['error', { max: 5 }],
+  'max-lines': [
+    'error',
+    {
+      max: 1000,
+      skipBlankLines: true,
+      skipComments: true,
+    },
+  ],
+  'max-lines-per-function': [
+    'error',
+    {
+      max: 200,
+      skipBlankLines: true,
+      skipComments: true,
+    },
+  ],
+  'max-nested-callbacks': ['error', { max: 10 }],
+  'max-params': ['error', { max: 5 }],
+};
 
 /**
  * Create a basic configuration for JavaScript.
  *
- * @param overrides Optional overrides for the config.
+ * @see {@link https://github.com/eslint/eslint/tree/main/packages/js}
+ * @param options - {@link ConfigJavaScriptOptions}
  * @returns A list of flat config items.
  */
-export async function createJavascriptConfig(
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
+export function createJavaScriptConfig(options: ConfigJavaScriptOptions = {}): TypedConfigItem[] {
+  const { strict = false, overrides = {} } = options;
+
   return [
     {
+      ...jsConfig.configs.recommended,
+      name: 'sankeyangshu/js/recommended',
+    },
+    {
+      name: 'sankeyangshu/js/core',
       languageOptions: {
         ecmaVersion: 'latest',
         globals: {
@@ -40,8 +81,6 @@ export async function createJavascriptConfig(
         'unused-imports': pluginUnusedImports,
       },
       rules: {
-        ...jsRules.configs.recommended.rules,
-
         'accessor-pairs': ['error', { enforceForClassMembers: true, setWithoutGet: true }],
         'array-callback-return': 'error',
         'block-scoped-var': 'error',
@@ -223,8 +262,26 @@ export async function createJavascriptConfig(
         'vars-on-top': 'error',
         yoda: ['error', 'never'],
 
+        // Strict rules
+        ...(strict ? strictRules : {}),
+
+        // Overrides rules
         ...overrides,
       },
     },
   ];
 }
+
+export const createJSXConfig = (): TypedConfigItem[] => [
+  {
+    name: 'sankeyangshu/jsx',
+    files: [GLOB_JSX, GLOB_TSX],
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+  },
+];

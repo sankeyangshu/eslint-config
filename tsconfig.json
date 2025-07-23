@@ -25,6 +25,6 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": ["./src/**/*.ts", "./test/**/*.ts", "./scripts/**/*.ts", "./typings/**/*.d.ts", "./*.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

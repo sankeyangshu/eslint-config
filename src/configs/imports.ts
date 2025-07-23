@@ -1,23 +1,53 @@
-import { interopDefault } from '../utils';
-import type { FlatConfigItemType } from '../types';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import { pluginImportX } from '../eslint';
+import type { OptionsOverrides, OptionsShareable, TypedConfigItem } from '../types';
+
+/**
+ * Options type of {@link createImportsConfig}
+ */
+export type ConfigImportOptions = Pick<OptionsShareable, 'typescript'> &
+  OptionsOverrides & {
+    /**
+     * Use [eslint-import-resolver-typescript](https://github.com/import-js/eslint-import-resolver-typescript) if `typescript` is installed
+     *
+     * @default true
+     */
+    preferTypeScriptResolver?: boolean;
+  };
 
 /**
  * Create a basic configuration for imports.
  *
- * @param overrides Optional overrides for the config.
+ * @see {@link https://github.com/un-ts/eslint-plugin-import-x}
+ * @param options - {@link ConfigImportOptions}
  * @returns A list of flat config items.
  */
-export async function createImportsConfig(
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
-  const pluginImport = await interopDefault(import('eslint-plugin-import-x'));
+export function createImportsConfig(options: ConfigImportOptions = {}): TypedConfigItem[] {
+  const {
+    // use typescript resolve if possible
+    preferTypeScriptResolver = true,
+    typescript: enableTypeScript,
+  } = options;
 
   return [
     {
+      name: 'sankeyangshu/imports',
       plugins: {
-        import: pluginImport,
+        import: pluginImportX,
+      },
+      settings: {
+        'import/resolver-next': [
+          enableTypeScript && preferTypeScriptResolver
+            ? createTypeScriptImportResolver({
+                extensions: ['.ts', '.tsx', '.d.ts', '.js', '.jsx', '.json', '.node'],
+              })
+            : pluginImportX.createNodeResolver({
+                extensions: ['.js', '.mjs', '.ts', '.mts', '.d.ts', '.json'],
+              }),
+        ],
       },
       rules: {
+        'import/export': 'error',
         'import/first': 'error',
         'import/newline-after-import': 'error',
         'import/no-duplicates': 'error',
@@ -27,7 +57,8 @@ export async function createImportsConfig(
         'import/no-webpack-loader-syntax': 'error',
         'import/order': 'off',
 
-        ...overrides,
+        // Overrides rules
+        ...options.overrides,
       },
     },
   ];

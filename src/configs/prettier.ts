@@ -1,40 +1,116 @@
-import prettierRules from 'eslint-config-prettier';
-import { GLOB_PRETTIER_LINT } from '../constants';
-import { interopDefault } from '../utils';
-import type { FlatConfigItemType, PartialPrettierExtendedOptionsType } from '../types';
+import { GLOB_ASTRO, GLOB_SVELTE, GLOB_SVG, GLOB_TOML } from '../constants';
+import { pluginPrettier } from '../eslint';
+import type { ESLintRuleSeverity, OptionsOverrides, TypedConfigItem } from '../types';
 
-const { rules: eslintRules } = prettierRules;
+/**
+ * Options type of {@link createPrettierConfig}
+ */
+export interface ConfigPrettierOptions extends OptionsOverrides {
+  /**
+   * Glob of built-in disabled files
+   *
+   * @default all svg, toml, svelte and astro files
+   */
+  disabledFiles?: string[];
+
+  /**
+   * rule severity
+   *
+   * @default `warn`
+   */
+  severity?: ESLintRuleSeverity;
+
+  /**
+   * Glob of user custom disabled files
+   *
+   * @default []
+   */
+  userDisabledFiles?: string[];
+}
 
 /**
  * Create a basic configuration for Prettier.
  *
- * @param rules Partial prettier options, including file patterns.
+ * @see {@link https://github.com/prettier/eslint-plugin-prettier}
+ *
+ * @param options - {@link ConfigPrettierOptions}
  * @returns A list of flat config items.
  */
-export async function createPrettierConfig(
-  rules: PartialPrettierExtendedOptionsType
-): Promise<FlatConfigItemType[]> {
-  const pluginPrettier = await interopDefault(import('eslint-plugin-prettier'));
-
-  // TODO: Add plugins, but since there are currently no plugins, comment
-  // const { plugins = [] } = rules;
-
-  const pRules: PartialPrettierExtendedOptionsType = {
-    ...rules,
-    // plugins: plugins.concat('prettier-plugin-jsdoc'),
-  };
+export function createPrettierConfig(options: ConfigPrettierOptions = {}): TypedConfigItem[] {
+  const {
+    disabledFiles = [GLOB_SVG, GLOB_TOML, GLOB_ASTRO, GLOB_SVELTE],
+    // User defined disabled files
+    userDisabledFiles = [],
+  } = options;
 
   return [
     {
-      files: GLOB_PRETTIER_LINT,
+      name: 'sankeyangshu/prettier',
       plugins: {
         prettier: pluginPrettier,
       },
       rules: {
-        ...eslintRules,
-        'prettier/prettier': ['warn', pRules],
+        'vue/array-bracket-newline': 'off',
+        'vue/array-bracket-spacing': 'off',
+        'vue/array-element-newline': 'off',
+        'vue/arrow-spacing': 'off',
+        'vue/block-spacing': 'off',
+        'vue/block-tag-newline': 'off',
+        'vue/brace-style': 'off',
+        'vue/comma-dangle': 'off',
+        'vue/comma-spacing': 'off',
+        'vue/comma-style': 'off',
+        'vue/dot-location': 'off',
+        'vue/func-call-spacing': 'off',
+        'vue/html-closing-bracket-newline': 'off',
+        'vue/html-closing-bracket-spacing': 'off',
+        'vue/html-end-tags': 'off',
+        'vue/html-indent': 'off',
+        'vue/html-quotes': 'off',
+        'vue/key-spacing': 'off',
+        'vue/keyword-spacing': 'off',
+        'vue/max-attributes-per-line': 'off',
+        'vue/multiline-html-element-content-newline': 'off',
+        'vue/multiline-ternary': 'off',
+        'vue/mustache-interpolation-spacing': 'off',
+        'vue/no-extra-parens': 'off',
+        'vue/no-multi-spaces': 'off',
+        'vue/no-spaces-around-equal-signs-in-attribute': 'off',
+        'vue/object-curly-newline': 'off',
+        'vue/object-curly-spacing': 'off',
+        'vue/object-property-newline': 'off',
+        'vue/operator-linebreak': 'off',
+        'vue/quote-props': 'off',
+        'vue/script-indent': 'off',
+        'vue/singleline-html-element-content-newline': 'off',
+        'vue/space-in-parens': 'off',
+        'vue/space-infix-ops': 'off',
+        'vue/space-unary-ops': 'off',
+        'vue/template-curly-spacing': 'off',
+        /**
+         * @pg
+         * @see {@link https://github.com/prettier/eslint-plugin-prettier/blob/cd48a275f130e515f23cebdf7c6cb588b041cd64/eslint-plugin-prettier.js#L101-L103}
+         */
         'arrow-body-style': 'off',
         'prefer-arrow-callback': 'off',
+        'prettier/prettier': options.severity || 'warn',
+
+        // Overrides rules
+        ...options.overrides,
+      },
+    },
+
+    /**
+     * Languages that prettier currently does not support
+     */
+    {
+      name: 'sankeyangshu/prettier/disabled',
+      files: [...disabledFiles, ...userDisabledFiles],
+      plugins: {
+        prettier: pluginPrettier,
+      },
+      rules: {
+        'prettier/prettier': 'off',
       },
     },
   ];

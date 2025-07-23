@@ -1,43 +1,37 @@
 import { GLOB_JSX, GLOB_TSX } from '../constants';
+import { parserTypeScript } from '../eslint';
 import { ensurePackages, interopDefault } from '../utils';
-import type {
-  FlatConfigItemType,
-  OptionsHasTypeScript,
-  RequiredRuleBaseOptionsType,
-} from '../types';
+import type { ESLintParser, OptionsFiles, OptionsOverrides, OptionsShareable, TypedConfigItem } from '..';
+
+/**
+ * Options type of {@link createSolidConfig}
+ */
+export type ConfigSolidOptions = OptionsFiles & OptionsOverrides & OptionsShareable;
 
 /**
  * Creates a basic configuration for Solid.
  *
- * @param options Optional options for the config.
- * @param overrides Optional overrides for the config.
+ * @see {@link https://github.com/solidjs-community/eslint-plugin-solid}
+ *
+ * @param options - {@link ConfigSolidOptions}
  * @returns A list of flat config items.
  */
-export async function createSolidConfig(
-  options?: RequiredRuleBaseOptionsType & OptionsHasTypeScript,
-  overrides: Record<string, string> = {}
-): Promise<FlatConfigItemType[]> {
-  if (!options) return [];
-
-  const { files = [GLOB_JSX, GLOB_TSX], typescript = true } = options;
-
+export async function createSolidConfig(options: ConfigSolidOptions = {}): Promise<TypedConfigItem[]> {
   await ensurePackages(['eslint-plugin-solid']);
 
-  const [pluginSolid, parserTs] = await Promise.all([
-    interopDefault(import('eslint-plugin-solid')),
-    interopDefault(import('@typescript-eslint/parser')),
-  ] as const);
+  const pluginSolid = await interopDefault(import('eslint-plugin-solid'));
+
+  const { files = [GLOB_JSX, GLOB_TSX], typescript: enableTypeScript } = options;
 
   return [
     {
+      name: 'sankeyangshu/solid',
+      files,
       plugins: {
         solid: pluginSolid,
       },
-    },
-    {
-      files,
       languageOptions: {
-        parser: parserTs,
+        parser: parserTypeScript as ESLintParser,
         parserOptions: {
           ecmaFeatures: {
             jsx: true,
@@ -74,14 +68,16 @@ export async function createSolidConfig(
         'solid/reactivity': 'warn',
         'solid/self-closing-comp': 'error',
         'solid/style-prop': ['error', { styleProps: ['style', 'css'] }],
-        ...(typescript
+
+        ...(enableTypeScript
           ? {
               'solid/jsx-no-undef': ['error', { typescriptEnabled: true }],
               'solid/no-unknown-namespaces': 'off',
             }
           : {}),
-        // overrides
-        ...overrides,
+
+        // Overrides rules
+        ...options.overrides,
       },
     },
   ];
