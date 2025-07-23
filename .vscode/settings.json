@@ -1,24 +1,24 @@
 {
+  "prettier.enable": true,
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "never"
   },
   "eslint.useFlatConfig": true,
-  "editor.formatOnSave": false,
   "eslint.validate": [
     "vue",
     "svelte",
     "astro",
-    "html",
-    "css",
-    "less",
-    "scss",
+    "yaml",
+    "toml",
     "json",
     "jsonc",
-    "yaml",
-    "yml",
+    "json5",
     "markdown",
-    "toml"
-  ],
-  "prettier.enable": false
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
+  ]
 }
