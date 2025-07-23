@@ -10,8 +10,7 @@ Sankeyangshu 的 ESLint 扁平化配置预设，包含 prettier。
 - 默认配置支持 JavaScript 和 TypeScript
 - 支持 JSON(5)、YAML、Markdown 等格式
 - 有主见，但非常可定制
-- 可选 Vue、React、ReactNative、Solid、Svelte 和 Astro 支持
-- 可选格式化程序支持格式化 CSS、HTML、YAML、Markdown 等。
+- 可选 Vue、React、Solid、Svelte 和 Astro 支持
 - 自动排序导入、`package.json`、`tsconfig.json` 等文件。
 - 支持 [ESLint Flat 配置](https://eslint.org/docs/latest/use/configure/configuration-files-new)，易于组合！
 - 忽略常见文件夹，如 `dist`、`node_modules`、`coverage` 中的文件
@@ -50,30 +49,28 @@ export default defineConfig({
 
 ```json
 {
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "never"
   },
   "eslint.useFlatConfig": true,
-  "editor.formatOnSave": false,
   "eslint.validate": [
-    // "javascript", // 默认支持
-    // "javascriptreact", // 默认支持
-    // "typescript",  // 默认支持
-    // "typescriptreact", // 默认支持
-    // 添加你想要检查和格式化的语言
     "vue",
     "svelte",
     "astro",
-    "html",
-    "css",
+    "yaml",
+    "toml",
     "json",
     "jsonc",
-    "yaml"
-    "toml",
-    "markdown"
+    "json5",
+    "markdown",
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
   ],
-  "prettier.enable": false
+  "prettier.enable": true
 }
 ```
 
@@ -82,102 +79,126 @@ export default defineConfig({
 ```json
 {
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   }
 }
 ```
 
 ## 配置
 
-````typescript
-interface Options {
+```typescript
+interface ConfigOptions {
   /**
-   * 项目根目录
-   *
-   * @default process.cwd()
+   * Shareable options
    */
-  cwd: string;
-  /**
-   * 被忽略的 glob
-   */
-  ignores: string[];
-  /**
-   * 启用 gitignore 支持
-   *
-   * @default true
-   * @see https://github.com/antfu/eslint-config-flat-gitignore
-   */
-  gitignore?: boolean | FlatGitignoreOptions;
-  /**
-   * 覆盖的规则
-   */
-  overrides?: FlatConfigItem['rules'];
-  /**
-   * 默认的Prettier配置
-   *
-   * @default
-   * ```json
-   * {
-   *    "useTabs": false,
-   *    "tabWidth": 2,
-   *    "printWidth": 100,
-   *    "singleQuote": true,
-   *    "trailingComma": "es5",
-   *    "bracketSpacing": true,
-   *    "semi": true
-   * }
-   * ```
-   */
-  prettierRules: PartialPrettierExtendedOptions;
-  /**
-   * 是否使用 prettierrc 进行 prettier 配置
-   *
-   * 如果为 true，prettierrc 中的规则将会覆盖默认规则
-   *
-   * @default true
-   */
-  usePrettierrc: boolean;
+  shareable?: OptionsShareable;
 
   /**
-   * 格式化器
-   * @default 默认支持的格式化器
-   * {
-   *  "html": true,
-   *  "css": true,
-   * }
+   * Auto rename plugins
+   * @default true
    */
-  formatter: {
-    html?: boolean;
-    css?: boolean;
-    markdown?: boolean;
-    yaml?: boolean;
-    toml?: boolean;
-  };
-  vue?: VueOptions | boolean;
-  react?: RuleBaseOptions | boolean;
-  'react-native'?: RuleBaseOptions | boolean;
-  solid?: RuleBaseOptions | boolean;
-  svelte?: RuleBaseOptions | boolean;
-  astro?: RuleBaseOptions | boolean;
+  autoRenamePlugins?: boolean;
+
+  /**
+   * Configs enabled by default
+   */
+  command?: ConfigCommandOptions;
+  comments?: ConfigCommentsOptions;
+  ignores?: ConfigIgnoresOptions;
+  node?: ConfigNodeOptions;
+  javascript?: ConfigJavaScriptOptions;
+
+  // TODO: 暂时禁用，可能以后会启用；目前使用 prettier 格式化
+  // formatter?: boolean | ConfigFormatOptions;
+
+  /**
+   * Configs bellow can be disabled
+   */
+  gitignore?: boolean | ConfigGitIgnoreOptions;
+  imports?: boolean | ConfigImportOptions;
+  jsdoc?: boolean | ConfigJsdocOptions;
+  jsonc?: boolean | ConfigJsoncOptions;
+  markdown?: boolean | ConfigMarkdownOptions;
+  disables?: boolean | ConfigDisablesOptions;
+  perfectionist?: boolean | ConfigPerfectionistOptions;
+  prettier?: boolean | ConfigPrettierOptions;
+  yml?: boolean | ConfigYmlOptions;
+  regexp?: boolean | ConfigRegexpOptions;
+  sort?: boolean | ConfigSortOptions;
+  unicorn?: boolean | ConfigUnicornOptions;
+  toml?: boolean | ConfigTomlOptions;
+
+  /**
+   * Configs bellow are disabled by default
+   */
+  astro?: boolean | ConfigAstroOptions;
+  solid?: boolean | ConfigSolidOptions;
+  svelte?: boolean | ConfigSvelteOptions;
+  test?: boolean | ConfigTestOptions;
+  pnpm?: boolean | ConfigPnpmOptions;
+  typescript?: boolean | ConfigTypeScriptOptions;
+  react?: boolean | ConfigReactOptions;
+  unocss?: boolean | ConfigUnoCSSOptions;
+  vue?: boolean | ConfigVueOptions;
 }
+```
 
-type RuleBaseOptions<T = NonNullable<unknown>> = T & {
-  /**
-   * 需要被检测的文件
-   */
-  files?: string[];
-};
+<details>
+<summary>💼 集成 Prettier</summary>
 
-type VueOptions = RuleBaseOptions<{
-  /**
-   * Vue 版本
-   *
-   * @default 3
-   */
-  version?: 2 | 3;
-}>;
-````
+## Prettier 配置
+
+> 您可以自由使用自己的 prettier 配置。
+
+安装 `prettier` 并设置您的 prettier 配置：
+
+```shell
+npm i prettier -D
+```
+
+```shell
+yarn add prettier -D
+```
+
+```shell
+pnpm add prettier -D
+```
+
+```shell
+bun add prettier -D
+```
+
+```json
+// .prettierrc
+{
+  "arrowParens": "always",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "embeddedLanguageFormatting": "auto",
+  "endOfLine": "lf",
+  "experimentalOperatorPosition": "end",
+  "experimentalTernaries": false,
+  "htmlWhitespaceSensitivity": "css",
+  "insertPragma": false,
+  "jsxSingleQuote": true,
+  "objectWrap": "preserve",
+  "printWidth": 120,
+  "proseWrap": "preserve",
+  "quoteProps": "as-needed",
+  "rangeStart": 0,
+  "requirePragma": false,
+  "semi": true,
+  "singleAttributePerLine": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "useTabs": false,
+  "vueIndentScriptAndStyle": false
+}
+```
+
+</details>
 
 ## 感谢
 
