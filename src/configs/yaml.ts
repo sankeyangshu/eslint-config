@@ -35,9 +35,9 @@ export function createYamlConfig(options: ConfigYmlOptions = {}): TypedConfigIte
 
   return [
     {
-      name: 'antfu/yaml/setup',
+      name: 'sankeyangshu/yaml/setup',
       plugins: {
-        yaml: pluginYml,
+        yml: pluginYml,
       },
     },
     {

@@ -75,7 +75,6 @@ export function createDisablesConfig(options: ConfigDisablesOptions = {}): Typed
       files: [`**/bin/${GLOB_SRC}`, `**/bin.${GLOB_SRC_EXT}`],
       rules: {
         '@typescript-eslint/explicit-function-return-type': 'off',
-        'antfu/no-import-dist': 'off',
         'no-console': 'off',
 
         // Overrides rules
