@@ -15,19 +15,13 @@ export async function ensurePackages(packages: string[]) {
   const nonExistingPackages = packages.filter((i) => !isPackageExists(i));
   if (nonExistingPackages.length === 0) return;
 
-  const { default: prompts } = await import('prompts');
+  const { confirm } = (await import('@clack/prompts')) as {
+    confirm: (options: { message: string }) => Promise<boolean>;
+  };
 
-  const message = `${
-    nonExistingPackages.length === 1 ? 'Package is' : 'Packages are'
-  } required for this config: ${nonExistingPackages.join(', ')}. Do you want to install them?`;
-
-  const result = await prompts([
-    {
-      message,
-      name: 'result',
-      type: 'confirm',
-    },
-  ]);
+  const result = await confirm({
+    message: `${nonExistingPackages.length === 1 ? 'Package is' : 'Packages are'} required for this config: ${nonExistingPackages.join(', ')}. Do you want to install them?`,
+  });
 
   if (result) {
     const { installPackage } = await import('@antfu/install-pkg');
