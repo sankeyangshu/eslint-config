@@ -90,7 +90,7 @@ const unCategorizedRules: TypedConfigItem['rules'] = {
   'vue/block-order': [
     'error',
     {
-      order: ['script', 'template', 'style'],
+      order: ['template', 'script', 'style'],
     },
   ],
   'vue/block-tag-newline': [

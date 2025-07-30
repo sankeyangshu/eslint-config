@@ -9,7 +9,7 @@ import type { TypedConfigItem } from '../types';
 export type ConfigCommandOptions = ESLintPluginCommandOptions;
 
 /**
- * Config for useing comments as codemod
+ * Config for use comments as commands
  *
  * @see {@link https://github.com/antfu/eslint-plugin-command}
  *
