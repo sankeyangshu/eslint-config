@@ -1,5 +1,4 @@
 {
-  "prettier.enable": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
@@ -20,5 +19,7 @@
     "typescript",
     "javascriptreact",
     "typescriptreact"
-  ]
+  ],
+  "prettier.enable": true,
+  "cSpell.words": ["tsdown", "unocss", "bumpp"]
 }

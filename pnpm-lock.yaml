@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  eslint-plugin-vue:
+    hash: 8d8c9e59376c2965ac803fee49199b1233e58a327e7bbff800d382d150ff7138
+    path: patches/eslint-plugin-vue.patch
+
 importers:
 
   .:
@@ -104,9 +109,6 @@ importers:
       typescript-eslint:
         specifier: ^8.38.0
         version: 8.38.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
-      vue-eslint-parser:
-        specifier: ^10.2.0
-        version: 10.2.0(eslint@9.31.0(jiti@2.4.2))
       yaml-eslint-parser:
         specifier: ^1.3.0
         version: 1.3.0
@@ -161,7 +163,7 @@ importers:
         version: 3.11.0(eslint@9.31.0(jiti@2.4.2))(svelte@5.36.13)
       eslint-plugin-vue:
         specifier: ^10.3.0
-        version: 10.3.0(@typescript-eslint/parser@8.38.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(vue-eslint-parser@10.2.0(eslint@9.31.0(jiti@2.4.2)))
+        version: 10.3.0(patch_hash=8d8c9e59376c2965ac803fee49199b1233e58a327e7bbff800d382d150ff7138)(@typescript-eslint/parser@8.38.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(vue-eslint-parser@10.2.0(eslint@9.31.0(jiti@2.4.2)))
       eslint-typegen:
         specifier: ^2.2.1
         version: 2.2.1(eslint@9.31.0(jiti@2.4.2))
@@ -180,6 +182,9 @@ importers:
       svelte-eslint-parser:
         specifier: ^1.3.0
         version: 1.3.0(svelte@5.36.13)
+      tinyglobby:
+        specifier: ^0.2.14
+        version: 0.2.14
       tsdown:
         specifier: ^0.13.0
         version: 0.13.0(typescript@5.8.3)
@@ -195,6 +200,9 @@ importers:
       vue:
         specifier: ^3.5.18
         version: 3.5.18(typescript@5.8.3)
+      vue-eslint-parser:
+        specifier: ^10.2.0
+        version: 10.2.0(eslint@9.31.0(jiti@2.4.2))
 
 packages:
 
@@ -5078,7 +5086,7 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 8.38.0(@typescript-eslint/parser@8.38.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
 
-  eslint-plugin-vue@10.3.0(@typescript-eslint/parser@8.38.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(vue-eslint-parser@10.2.0(eslint@9.31.0(jiti@2.4.2))):
+  eslint-plugin-vue@10.3.0(patch_hash=8d8c9e59376c2965ac803fee49199b1233e58a327e7bbff800d382d150ff7138)(@typescript-eslint/parser@8.38.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(vue-eslint-parser@10.2.0(eslint@9.31.0(jiti@2.4.2))):
     dependencies:
       '@eslint-community/eslint-utils': 4.7.0(eslint@9.31.0(jiti@2.4.2))
       eslint: 9.31.0(jiti@2.4.2)
