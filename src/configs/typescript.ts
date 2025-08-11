@@ -201,7 +201,7 @@ export function createTypeScriptConfig(options: ConfigTypeScriptOptions = {}): T
           'error',
           {
             assertionStyle: 'as',
-            objectLiteralTypeAssertions: 'allow-as-parameter',
+            objectLiteralTypeAssertions: 'allow',
           },
         ],
         '@typescript-eslint/consistent-type-imports': [

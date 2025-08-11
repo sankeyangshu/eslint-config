@@ -295,7 +295,6 @@ export async function createVueConfig(options: ConfigVueOptions = {}): Promise<T
           {
             alphabetical: false,
             order: [
-              'EVENTS', // `@click="functionCall"`, `v-on="event"`
               'TWO_WAY_BINDING', // `v-model`
               'OTHER_DIRECTIVES', // `v-custom-directive`
               'LIST_RENDERING', // `v-for item in items`
@@ -310,6 +309,7 @@ export async function createVueConfig(options: ConfigVueOptions = {}): Promise<T
               'GLOBAL', // `id`
               'ATTR_STATIC', // `prop="foo", `static attributes
               'ATTR_SHORTHAND_BOOL', // `disabled`, prop shorthand
+              'EVENTS', // `@click="functionCall"`, `v-on="event"`
             ],
           },
         ],
@@ -320,7 +320,7 @@ export async function createVueConfig(options: ConfigVueOptions = {}): Promise<T
             svg: 'always',
             html: {
               component: 'always',
-              normal: 'always',
+              normal: 'never',
               void: 'always',
             },
           },
