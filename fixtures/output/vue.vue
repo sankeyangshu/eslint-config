@@ -4,8 +4,8 @@
       {{ greeting }}
     </h1>
     <button
-      @click="incrementCounter"
       type="button"
+      @click="incrementCounter"
     >
       Click me!
     </button>

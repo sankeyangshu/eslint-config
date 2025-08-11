@@ -18,8 +18,8 @@ const incrementCounter = () => {
       {{ greeting }}
     </h1>
     <button
-      type="button"
       @click="incrementCounter"
+      type="button"
     >
       Click me!
     </button>
