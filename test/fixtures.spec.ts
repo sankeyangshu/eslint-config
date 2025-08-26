@@ -27,12 +27,10 @@ function runWithConfig(configs: ConfigOptions, ...items: TypedConfigItem[]) {
     });
 
     await writeFile(
-      join(target, 'eslint.config.ts'),
+      join(target, 'eslint.config.js'),
       `
 // @eslint-disable
-import { tsImport } from 'tsx/esm/api';
-
-const defineConfig = (await tsImport('@sankeyangshu/eslint-config', import.meta.url)).defineConfig;
+import { defineConfig } from '@sankeyangshu/eslint-config';
 
 export default defineConfig(
   ${JSON.stringify(configs)},
@@ -47,7 +45,7 @@ export default defineConfig(
     });
 
     const files = await glob('**/*', {
-      ignore: ['node_modules', 'eslint.config.ts'],
+      ignore: ['node_modules', 'eslint.config.js'],
       cwd: target,
     });
 
