@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { green } from 'ansis';
 import { flatConfigsToRulesDTS } from 'eslint-typegen/core';
 import { builtinRules } from 'eslint/use-at-your-own-risk';
 import {
@@ -90,4 +91,12 @@ export type ConfigNames = ${configNames.map((i) => `'${i}'`).join(' | ')}
 `,
     ].join('\n')
   );
+}
+
+try {
+  console.info(`${green('TYPES')} start generating types...`);
+  await generateTypes();
+  console.info(`${green('TYPES')} generated success.`);
+} catch (err) {
+  console.error(err);
 }
