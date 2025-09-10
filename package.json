@@ -1,6 +1,6 @@
 {
   "name": "@sankeyangshu/eslint-config",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "type": "module",
   "packageManager": "pnpm@10.15.1",
   "description": "ESLint config for @sankeyangshu.",
