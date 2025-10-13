@@ -111,7 +111,6 @@ export async function createReactConfig(options: ConfigReactOptions = {}): Promi
         'react/no-children-only': 'warn',
         'react/no-children-to-array': 'warn',
         'react/no-clone-element': 'warn',
-        'react/no-comment-textnodes': 'warn',
         'react/no-component-will-mount': 'error',
         'react/no-component-will-receive-props': 'error',
         'react/no-component-will-update': 'error',

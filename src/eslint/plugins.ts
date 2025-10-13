@@ -5,6 +5,7 @@ export { default as pluginToml } from 'eslint-plugin-toml';
 export { default as pluginMarkdown } from '@eslint/markdown';
 export { default as pluginJsdoc } from 'eslint-plugin-jsdoc';
 export { default as pluginJsonc } from 'eslint-plugin-jsonc';
+export { default as pluginOxlint } from 'eslint-plugin-oxlint';
 export { plugin as pluginTypeScript } from 'typescript-eslint';
 export { default as pluginVitest } from '@vitest/eslint-plugin';
 export { default as pluginUnicorn } from 'eslint-plugin-unicorn';

@@ -13,6 +13,7 @@ import {
   createJSXConfig,
   createMarkdownConfig,
   createNodeConfig,
+  createOxlintConfig,
   createPerfectionistConfig,
   createPnpmConfig,
   createPrettierConfig,
@@ -321,6 +322,8 @@ export function defineConfig(
   if (enableDisables) {
     configs.push(createDisablesConfig(resolveSubOptions(options, 'disables')));
   }
+
+  configs.push(createOxlintConfig());
 
   const prettierConfigs: TypedConfigItem[] = enablePrettier
     ? createPrettierConfig({

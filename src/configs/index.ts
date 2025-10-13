@@ -10,6 +10,7 @@ export * from './jsdoc';
 export * from './jsonc';
 export * from './react';
 export * from './solid';
+export * from './oxlint';
 export * from './regexp';
 export * from './svelte';
 export * from './unocss';
